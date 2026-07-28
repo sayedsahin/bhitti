@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\DB;
+use App\Supports\Auth;
 use App\Supports\Role;
 use App\Systems\Cache\Cache;
 use App\Systems\Database;
@@ -65,6 +66,15 @@ if (!function_exists('session')) {
         }
 
         return $proxy;
+    }
+}
+
+if (!function_exists('auth')) {
+    function auth(): Auth
+    {
+        global $container;
+
+        return $container->make(Auth::class);
     }
 }
 
