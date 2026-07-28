@@ -6,7 +6,6 @@ if (!function_exists('pr')) {
         echo "<pre>";
         print_r($array);
         echo "</pre>";
-        // exit();
     }
 }
 if (!function_exists('dd')) {
@@ -15,6 +14,6 @@ if (!function_exists('dd')) {
         echo "<pre>";
         var_dump($array);
         echo "</pre>";
-        exit();
+        exit;
     }
 }

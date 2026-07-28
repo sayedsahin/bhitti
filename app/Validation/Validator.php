@@ -8,6 +8,7 @@ final class Validator
     private array $nullable = [];
     private array $validatedFields = [];
     private bool $stopOnFirstFailure = false;
+    private const BOOLEAN_VALUES = [true, false, 0, 1, '0', '1', 'true', 'false'];
 
     public static function make(array $data): self
     {
@@ -149,8 +150,8 @@ final class Validator
 
             if ($v === null && $this->isNullable($field)) continue;
 
-            if (! is_int($v)) {
-                $this->error($field, 'Must be an integer.');
+            if (filter_var($v, FILTER_VALIDATE_INT) === false) {
+                $this->error($field, 'Must be a numeric.');
             }
         }
         return $this;
@@ -163,7 +164,7 @@ final class Validator
 
             if ($v === null && $this->isNullable($field)) continue;
 
-            if (! is_bool($v)) {
+            if (!in_array($v, self::BOOLEAN_VALUES, true)) {
                 $this->error($field, 'Must be boolean.');
             }
         }

@@ -41,6 +41,10 @@ if (!function_exists('roles')) {
     }
 }
 
+/**
+ * @return Session
+ */
+
 if (!function_exists('session')) {
     function session()
     {

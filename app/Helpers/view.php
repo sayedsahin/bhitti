@@ -53,34 +53,3 @@ function csrf_field(): string
 {
     return '<input type="hidden" name="_csrf" value="' . e(csrf_token()) . '">';
 }
-
-function verify_csrf(): void
-{
-    // This function is now handled by the Csrf middleware, so you don't need to call it manually in your controllers.
-
-    // $session_token = Session::get('_csrf');
-
-    // $token = $_POST['_csrf'] ?? '';
-
-    // if (!hash_equals($session_token ?? '', $token)) {
-    //     http_response_code(419);
-    //     exit('CSRF token mismatch');
-    // }
-}
-
-// function send_security_headers(): void
-// {
-//     header('X-Frame-Options: SAMEORIGIN');
-//     header('X-Content-Type-Options: nosniff');
-//     header('X-XSS-Protection: 0'); // modern browsers
-//     header('Referrer-Policy: strict-origin-when-cross-origin');
-//     header('Permissions-Policy: geolocation=(), microphone=()');
-
-//     // CSP (tight but safe)
-//     header(
-//         "Content-Security-Policy: default-src 'self'; " .
-//         "style-src 'self' 'unsafe-inline'; " .
-//         "script-src 'self'; " .
-//         "img-src 'self' data:;"
-//     );
-// }
