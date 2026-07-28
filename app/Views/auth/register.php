@@ -1,7 +1,7 @@
 <?php ob_start(); ?>
 
 <h2><?= e($title) ?></h2>
-<?php flash(); ?>
+<?= flash(); ?>
 <form method="post" action="/register">
     <?= csrf_field() ?>
     <!-- name -->
