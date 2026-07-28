@@ -4,13 +4,7 @@
             "App\\": "app/"
         },
         "files": [
-            "app/Helpers/common.php",
-            "app/Helpers/config.php",
-            "app/Helpers/http.php",
-            "app/Helpers/text.php",
-            "app/Helpers/time.php",
-            "app/Helpers/view.php",
-            "app/Helpers/debug.php"
+            "app/Helpers/helper.php"
         ]
     },
     "require": {
