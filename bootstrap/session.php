@@ -1,8 +1,8 @@
 <?php
 
-use App\Systems\Session\Drivers\NativeSession;
-use App\Systems\Session\Drivers\NullSession;
-use App\Systems\Session\Session;
+use Bhitti\Session\Drivers\NativeSession;
+use Bhitti\Session\Drivers\NullSession;
+use Bhitti\Session\Session;
 
 $config = (array) config('session');
 

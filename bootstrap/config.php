@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Systems\Config\Config;
-use App\Systems\Config\ConfigLoader;
+use Bhitti\Config\Config;
+use Bhitti\Config\ConfigLoader;
 
 
 $cacheFile = STORAGE_PATH . '/cache/config.php';

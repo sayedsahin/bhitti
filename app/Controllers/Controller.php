@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Systems\Middleware\MiddlewareKernel;
-use App\Systems\Response;
+use Bhitti\Http\Middleware\MiddlewareKernel;
+use Bhitti\Http\Response;
 
 abstract class Controller
 {

@@ -1,10 +1,11 @@
 {
     "autoload": {
         "psr-4": {
+            "Bhitti\\": "src/Bhitti/",
             "App\\": "app/"
         },
         "files": [
-            "app/Helpers/helper.php"
+            "src/Bhitti/Supports/helper.php"
         ]
     },
     "require": {

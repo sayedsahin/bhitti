@@ -2,8 +2,8 @@
 
 namespace App\Middlewares;
 
-use App\Systems\Middleware\MiddlewareInterface;
-use App\Systems\Response;
+use Bhitti\Http\Middleware\MiddlewareInterface;
+use Bhitti\Http\Response;
 
 class ApiHeaders implements MiddlewareInterface
 {

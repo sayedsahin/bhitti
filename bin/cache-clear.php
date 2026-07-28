@@ -13,7 +13,7 @@ require_once __DIR__ . '/../config/path.php';
 require_once ROOT_PATH . '/vendor/autoload.php';
 require_once ROOT_PATH . '/app/Helpers/helper.php';
 
-use App\Systems\Cache\Cache;
+use Bhitti\Cache\Cache;
 
 $cachePath = STORAGE_PATH . '/cache';
 $failures = [];

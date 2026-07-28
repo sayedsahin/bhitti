@@ -239,7 +239,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Systems\Response;
+use Bhitti\Http\Response;
 
 final class UserController extends Controller
 {
@@ -445,8 +445,8 @@ declare(strict_types=1);
 
 namespace App\Middlewares;
 
-use App\Systems\Middleware\MiddlewareInterface;
-use App\Systems\Response;
+use Bhitti\Http\Middleware\MiddlewareInterface;
+use Bhitti\Http\Response;
 
 final class VerifiedEmail implements MiddlewareInterface
 {
@@ -490,7 +490,7 @@ return [
 Create a validator:
 
 ```php
-use App\Validation\Validator;
+use Bhitti\Validation\Validator;
 
 $validator = Validator::make(request()->all())
     ->required(['name', 'email'])
@@ -557,7 +557,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Systems\QueryBuilder;
+use Bhitti\Database\QueryBuilder;
 
 final class User extends QueryBuilder
 {
@@ -799,7 +799,7 @@ Role results are cached for the current request.
 ## Sessions
 
 ```php
-use App\Systems\Session\Session;
+use Bhitti\Session\Session;
 
 Session::set('key', $value);
 
@@ -906,7 +906,7 @@ Configure bindings in `config/container.php`:
 ```php
 return [
     'singletons' => [
-        \App\Systems\Database::class,
+        \Bhitti\Database\Database::class,
     ],
 
     'bindings' => [],

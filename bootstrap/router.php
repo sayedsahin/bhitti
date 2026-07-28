@@ -54,9 +54,9 @@ switch ($routeInfo[0]) {
 
 		$middlewares = $handler[2] ?? [];
 
-		$middlewareResponse = \App\Systems\Middleware\MiddlewareKernel::handle($middlewares);
+		$middlewareResponse = \Bhitti\Http\Middleware\MiddlewareKernel::handle($middlewares);
 
-		if ($middlewareResponse instanceof \App\Systems\Response) {
+		if ($middlewareResponse instanceof \Bhitti\Http\Response) {
 			$middlewareResponse->send();
 			return;
 		}
@@ -68,7 +68,7 @@ switch ($routeInfo[0]) {
 		$result = $controller->$action(...array_values($vars));
 
 		// Handle Response objects
-		if ($result instanceof \App\Systems\Response) {
+		if ($result instanceof \Bhitti\Http\Response) {
 			$result->send();
 		}
 		break;

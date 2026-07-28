@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Supports;
 
-use App\Systems\Session\Cookie;
-use App\Systems\Session\Session;
+use Bhitti\Session\Cookie;
+use Bhitti\Session\Session;
 use RuntimeException;
 
 final class Auth

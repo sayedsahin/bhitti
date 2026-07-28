@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/path.php';
 require_once ROOT_PATH . '/vendor/autoload.php';
 require_once ROOT_PATH . '/app/Helpers/helper.php';
 
-use App\Systems\Config\ConfigLoader;
+use Bhitti\Config\ConfigLoader;
 
 require ROOT_PATH . '/bootstrap/dotenv.php';
 

@@ -6,7 +6,8 @@ namespace App\Controllers;
 
 use App\Supports\Auth;
 use App\Supports\Role;
-use App\Validation\Validator;
+use Bhitti\Validation\ValidationException;
+use Bhitti\Validation\Validator;
 
 class ApiAuthController extends Controller
 {
@@ -24,7 +25,7 @@ class ApiAuthController extends Controller
                 ->required(['email', 'password'])
                 ->email('email')
                 ->validated();
-        } catch (\App\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
 
@@ -72,7 +73,7 @@ class ApiAuthController extends Controller
                 ->min(['password', 'password_confirmation'], 8)
                 ->confirmed('password')
                 ->validated();
-        } catch (\App\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
 
@@ -131,7 +132,7 @@ class ApiAuthController extends Controller
                 ->required(['email'])
                 ->email('email')
                 ->validated();
-        } catch (\App\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
 

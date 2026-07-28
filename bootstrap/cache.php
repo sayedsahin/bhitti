@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Systems\Cache\Cache;
-use App\Systems\Cache\CacheInterface;
-use App\Systems\Cache\Drivers\ApcuCache;
-use App\Systems\Cache\Drivers\ArrayCache;
-use App\Systems\Cache\Drivers\FileCache;
-use App\Systems\Cache\Drivers\MemcachedCache;
-use App\Systems\Cache\Drivers\RedisCache;
+use Bhitti\Cache\Cache;
+use Bhitti\Cache\CacheInterface;
+use Bhitti\Cache\Drivers\ApcuCache;
+use Bhitti\Cache\Drivers\ArrayCache;
+use Bhitti\Cache\Drivers\FileCache;
+use Bhitti\Cache\Drivers\MemcachedCache;
+use Bhitti\Cache\Drivers\RedisCache;
 
 $config = (array) config('cache');
 

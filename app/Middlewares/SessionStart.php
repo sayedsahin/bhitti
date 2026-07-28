@@ -1,9 +1,9 @@
 <?php
 namespace App\Middlewares;
 
-use App\Systems\Middleware\MiddlewareInterface;
-use App\Systems\Response;
-use App\Systems\Session\Session;
+use Bhitti\Http\Middleware\MiddlewareInterface;
+use Bhitti\Http\Response;
+use Bhitti\Session\Session;
 
 final class SessionStart implements MiddlewareInterface
 {

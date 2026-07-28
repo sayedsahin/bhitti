@@ -1,6 +1,6 @@
 <?php
 
-use App\Systems\Container;
+use Bhitti\Core\Container;
 
 // $config = require ROOT_PATH . '/config/container.php';
 

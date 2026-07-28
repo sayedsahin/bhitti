@@ -2,7 +2,7 @@
 
 namespace App\Supports;
 
-use App\Systems\Session\Session;
+use Bhitti\Session\Session;
 
 class Flash
 {

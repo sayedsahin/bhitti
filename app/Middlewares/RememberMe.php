@@ -2,12 +2,12 @@
 
 namespace App\Middlewares;
 
-use App\Systems\Session\Session;
-use App\Systems\Session\RememberToken;
-use App\Systems\Session\Cookie;
+use Bhitti\Session\Session;
+use Bhitti\Session\RememberToken;
+use Bhitti\Session\Cookie;
 use App\Supports\Auth;
-use App\Systems\Middleware\MiddlewareInterface;
-use App\Systems\Response;
+use Bhitti\Http\Middleware\MiddlewareInterface;
+use Bhitti\Http\Response;
 
 final class RememberMe implements MiddlewareInterface
 {

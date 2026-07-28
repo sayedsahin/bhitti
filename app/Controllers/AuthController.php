@@ -8,9 +8,10 @@ use App\Middlewares\Authenticated;
 use App\Middlewares\Guest;
 use App\Supports\Auth;
 use App\Supports\Role;
-use App\Systems\Session\Cookie;
-use App\Systems\Session\RememberToken;
-use App\Validation\Validator;
+use Bhitti\Session\Cookie;
+use Bhitti\Session\RememberToken;
+use Bhitti\Validation\ValidationException;
+use Bhitti\Validation\Validator;
 
 class AuthController extends Controller
 {
@@ -48,7 +49,7 @@ class AuthController extends Controller
 			// $data['email']
 			// $data['password']
 
-		} catch (\App\Validation\ValidationException $e) {
+		} catch (ValidationException $e) {
 			$errors = $e->errors();
 			return response()->redirect()->with(['errors' => $errors])->back();
 		}

@@ -1,7 +1,7 @@
 <?php 
 namespace App\Models;
 
-use App\Systems\QueryBuilder;
+use Bhitti\Database\QueryBuilder;
 
 class User extends QueryBuilder
 {

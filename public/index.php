@@ -28,7 +28,7 @@ require ROOT_PATH . '/bootstrap/config.php';
 $isApi = is_api_request();
 
 
-\App\Systems\Exception\ExceptionHandler::register(
+\Bhitti\Exception\ExceptionHandler::register(
     (bool) config('app.debug'),
     $isApi
 );
@@ -66,7 +66,7 @@ require ROOT_PATH . '/bootstrap/container.php';
 | Middleware Kernel (Headers, Auth, CSRF, etc.)
 |--------------------------------------------------------------------------
 */
-$kernel = new \App\Systems\Middleware\MiddlewareKernel();
+$kernel = new \Bhitti\Http\Middleware\MiddlewareKernel();
 $config = config('middleware');
 
 $kernel->web($config['web']);

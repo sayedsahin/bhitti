@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Middlewares;
 
-use App\Supports\RateLimiter;
-use App\Supports\RateLimitResult;
-use App\Systems\Middleware\MiddlewareInterface;
-use App\Systems\Response;
+use Bhitti\RateLimit\RateLimiter;
+use Bhitti\RateLimit\RateLimitResult;
+use Bhitti\Http\Middleware\MiddlewareInterface;
+use Bhitti\Http\Response;
 
 final class RateLimit implements MiddlewareInterface
 {
