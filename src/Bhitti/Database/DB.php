@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Bhitti\Database;
 
 use Bhitti\Database\QueryBuilder;
 

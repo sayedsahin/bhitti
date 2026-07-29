@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Supports\Auth;
+use Bhitti\Database\QueryBuilder;
 
 class HomeController extends Controller
 {

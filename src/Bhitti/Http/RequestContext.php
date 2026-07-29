@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Supports;
+namespace Bhitti\Http;
 
 final class RequestContext
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Supports;
 
+use Bhitti\Http\RequestContext;
 use Bhitti\Session\Cookie;
 use Bhitti\Session\Session;
 use RuntimeException;

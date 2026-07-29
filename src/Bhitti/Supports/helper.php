@@ -1,14 +1,12 @@
 <?php
 
-use App\Models\DB;
-use App\Supports\Auth;
-use App\Supports\Role;
 use Bhitti\Cache\Cache;
 use Bhitti\Database\Database;
 use Bhitti\Session\Session;
 use Bhitti\Config\Config;
 use Bhitti\Config\Env;
 use App\Supports\Flash;
+use Bhitti\Database\DB;
 use Bhitti\Http\Request;
 use Bhitti\Http\Response;
 
@@ -33,20 +31,6 @@ if (!function_exists('db')) {
     }
 }
 
-if (!function_exists('role')) {
-    function role(string $role): bool
-    {
-        return Role::has($role);
-    }
-}
-
-if (!function_exists('roles')) {
-    function roles(array $roles): bool
-    {
-        return Role::any($roles);
-    }
-}
-
 /**
  * @return Session
  */
@@ -66,15 +50,6 @@ if (!function_exists('session')) {
         }
 
         return $proxy;
-    }
-}
-
-if (!function_exists('auth')) {
-    function auth(): Auth
-    {
-        global $container;
-
-        return $container->make(Auth::class);
     }
 }
 

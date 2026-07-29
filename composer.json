@@ -5,7 +5,8 @@
             "App\\": "app/"
         },
         "files": [
-            "src/Bhitti/Supports/helper.php"
+            "src/Bhitti/Supports/helper.php",
+            "app/Helpers/common.php"
         ]
     },
     "require": {
