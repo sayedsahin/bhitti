@@ -220,4 +220,12 @@ final class Request
 
         return $token !== '' ? $token : null;
     }
+
+    public function isApi(): bool
+    {
+        $path = $this->path();
+
+        return $path === '/api'
+            || str_starts_with($path, '/api/');
+    }
 }

@@ -92,13 +92,9 @@ if (!function_exists('value')) {
 if (!function_exists('request')) {
 	function request(): Request
 	{
-		static $req;
+		global $container;
 
-		if (! $req) {
-			$req = Request::capture();
-		}
-
-		return $req;
+        return $container->make(Request::class);
 	}
 }
 
@@ -187,10 +183,7 @@ if (!function_exists('is_ajax')) {
 if (!function_exists('is_api_request')) {
     function is_api_request(): bool
     {
-        $path = request()->path();
-
-        return $path === '/api'
-            || str_starts_with($path, '/api/');
+        return request()->isApi();
     }
 }
 

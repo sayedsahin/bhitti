@@ -17,6 +17,7 @@ class Container
      */
     public function bind(string $abstract, Closure|string|null $concrete = null): void
     {
+        unset($this->singletons[$abstract]);
         $this->bindings[$abstract] = $concrete ?? $abstract;
     }
 
@@ -25,10 +26,22 @@ class Container
      */
     public function singleton(string $abstract, Closure|string|null $concrete = null): void
     {
+        unset($this->bindings[$abstract]);
         $this->singletons[$abstract] = [
             'concrete' => $concrete ?? $abstract,
             'resolved' => false,
             'instance' => null,
+        ];
+    }
+
+    public function instance(string $abstract, object $instance): void
+    {
+        unset($this->bindings[$abstract]);
+
+        $this->singletons[$abstract] = [
+            'concrete' => $abstract,
+            'resolved' => true,
+            'instance' => $instance,
         ];
     }
 

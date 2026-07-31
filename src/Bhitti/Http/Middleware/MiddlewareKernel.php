@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bhitti\Http\Middleware;
 
+use Bhitti\Core\Container;
 use Bhitti\Http\Response;
 use RuntimeException;
 
@@ -12,17 +13,15 @@ final class MiddlewareKernel
     private array $web = [];
     private array $api = [];
 
-    /**
-     * Register global web middleware.
-     */
+    public function __construct(private Container $container)
+    {
+    }
+
     public function web(array $middlewares): void
     {
         $this->web = $middlewares;
     }
 
-    /**
-     * Register global API middleware.
-     */
     public function api(array $middlewares): void
     {
         $this->api = $middlewares;
@@ -34,18 +33,12 @@ final class MiddlewareKernel
      * A returned Response immediately terminates
      * the current request.
      */
-    public function run(bool $isApi): void
+    public function handleGlobal(bool $isApi): ?Response
     {
-        $response = self::handle(
+        return $this->handle(
             $isApi ? $this->api : $this->web
         );
-
-        if ($response instanceof Response) {
-            $response->send();
-            exit;
-        }
     }
-
     /**
      * Execute a middleware stack.
      *
@@ -53,11 +46,10 @@ final class MiddlewareKernel
      * Returns null when every middleware allows execution
      * to continue.
      */
-    public static function handle(array $middlewares): ?Response
+    public function handle(array $middlewares): ?Response
     {
         foreach ($middlewares as $middleware) {
-            $instance = self::resolve($middleware);
-
+            $instance = $this->resolve($middleware);
             $response = $instance->handle();
 
             if ($response instanceof Response) {
@@ -80,19 +72,17 @@ final class MiddlewareKernel
      *     ['admin', 'editor']
      * ]
      */
-    private static function resolve(string|array $middleware): object
+    private function resolve(string|array $middleware): object
     {
         if (is_string($middleware)) {
-            return new $middleware();
+            return $this->container->make($middleware);
         }
 
         $class = $middleware[0] ?? null;
         $arguments = $middleware[1] ?? [];
 
         if (!is_string($class)) {
-            throw new RuntimeException(
-                'Invalid middleware definition.'
-            );
+            throw new RuntimeException('Invalid middleware definition.');
         }
 
         return new $class($arguments);

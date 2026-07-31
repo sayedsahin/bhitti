@@ -10,7 +10,6 @@ use RuntimeException;
 final class ConfigLoader
 {
     private const IGNORED_FILES = [
-        'path.php',
         'routes.php',
     ];
 
