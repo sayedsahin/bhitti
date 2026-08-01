@@ -15,7 +15,7 @@ final class MemcachedCache implements CacheInterface
     private string $versionKey;
     private ?string $namespace = null;
 
-    public function __construct(array $config, string $prefix = 'pkathamo:cache:')
+    public function __construct(array $config, string $prefix = 'bhitti:cache:')
     {
         if (!class_exists(\Memcached::class)) {
             throw new RuntimeException('Memcached extension is not installed.');

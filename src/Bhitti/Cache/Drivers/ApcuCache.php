@@ -12,7 +12,7 @@ final class ApcuCache implements CacheInterface
 {
     private string $prefix;
 
-    public function __construct(string $prefix = 'pkathamo:cache:')
+    public function __construct(string $prefix = 'bhitti:cache:')
     {
         if (!function_exists('apcu_enabled') || !apcu_enabled()) {
             throw new RuntimeException('APCu is not available in the current environment.');

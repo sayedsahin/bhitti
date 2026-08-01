@@ -73,7 +73,7 @@ final class RateLimiter
     {
         $prefix = (string) config(
             'rate_limit.prefix',
-            'pkathamo:rate-limit:'
+            'bhitti:rate-limit:'
         );
 
         return $prefix . hash('sha256', $key);

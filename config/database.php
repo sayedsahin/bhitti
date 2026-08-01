@@ -46,16 +46,19 @@ return [
         'port' => env('REDIS_PORT', 6379),
         'username' => env('REDIS_USERNAME', null),
         'password' => env('REDIS_PASSWORD', null),
+
         'db' => env('REDIS_DB', 0),
         'cache_db' => env('REDIS_CACHE_DB', 1),
         'rate_limit_db' => env('REDIS_RATE_LIMIT_DB', 2),
+        'session_db' => env('REDIS_SESSION_DB', 3),
+
         'prefix' => env('CACHE_PREFIX', 'app_cache:'),
         'timeout' => env('REDIS_TIMEOUT', 2.0),
         'read_timeout' => env('REDIS_READ_TIMEOUT', 2.0),
     ],
 
     'memcached' => [
-        'persistent_id' => env('MEMCACHED_PERSISTENT_ID', 'pkathamo'),
+        'persistent_id' => env('MEMCACHED_PERSISTENT_ID', 'bhitti'),
         'connect_timeout' => env('MEMCACHED_CONNECT_TIMEOUT', 2000),
 
         'servers' => [

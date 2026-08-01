@@ -6,6 +6,8 @@ namespace Bhitti\Session;
 
 use Bhitti\Session\Drivers\NativeSession;
 use Bhitti\Session\Drivers\NullSession;
+use Bhitti\Session\Drivers\RedisSession;
+use Bhitti\Session\Drivers\MemcachedSession;
 use RuntimeException;
 
 final class SessionManager
@@ -16,6 +18,8 @@ final class SessionManager
 
         $driver = match ($driverName) {
             'native' => new NativeSession($config),
+            'redis' => new RedisSession($config, config('database.redis', [])),
+            'memcached' => new MemcachedSession($config, config('database.memcached', [])),
             'null' => new NullSession($config),
 
             default => throw new RuntimeException(

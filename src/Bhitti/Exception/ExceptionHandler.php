@@ -18,14 +18,24 @@ final class ExceptionHandler
         E_RECOVERABLE_ERROR,
     ];
 
+    private const LOG_ONLY_ERRORS = [
+        E_DEPRECATED,
+        E_USER_DEPRECATED,
+    ];
+
     private static bool $debug = false;
     private static bool $isApi = false;
     private static bool $handling = false;
+    private static bool $registered = false;
 
     public static function register(bool $debug, bool $isApi): void
     {
         self::$debug = $debug;
         self::$isApi = $isApi;
+
+        if (self::$registered) {
+            return;
+        }
 
         error_reporting(E_ALL);
         ini_set('display_errors', '0');
@@ -33,6 +43,8 @@ final class ExceptionHandler
         set_exception_handler([self::class, 'handleException']);
         set_error_handler([self::class, 'handleError']);
         register_shutdown_function([self::class, 'handleShutdown']);
+
+        self::$registered = true;
     }
 
     public static function handleException(Throwable $exception): never
@@ -58,6 +70,20 @@ final class ExceptionHandler
     ): bool {
         if (!(error_reporting() & $severity)) {
             return false;
+        }
+
+        if (in_array($severity, self::LOG_ONLY_ERRORS, true)) {
+            error_log(sprintf(
+                'PHP %s: %s in %s on line %d',
+                $severity === E_USER_DEPRECATED
+                    ? 'User Deprecated'
+                    : 'Deprecated',
+                $message,
+                $file,
+                $line
+            ));
+
+            return true;
         }
 
         throw new ErrorException($message, 0, $severity, $file, $line);
@@ -90,13 +116,11 @@ final class ExceptionHandler
     {
         if (PHP_SAPI === 'cli') {
             self::renderCli($exception);
-
             return;
         }
 
         if (self::$isApi) {
             self::renderJson($exception);
-
             return;
         }
 
@@ -144,7 +168,6 @@ final class ExceptionHandler
 
         if (!self::$debug) {
             echo '<h1>Internal Server Error</h1>';
-
             return;
         }
 
@@ -186,7 +209,6 @@ HTML;
 
         if (PHP_SAPI === 'cli') {
             fwrite(STDERR, 'Internal Server Error' . PHP_EOL);
-
             exit(1);
         }
 
