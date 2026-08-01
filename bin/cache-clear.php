@@ -2,58 +2,76 @@
 
 declare(strict_types=1);
 
+use Bhitti\Cache\Cache;
+
 // Command: php bin/cache-clear.php
 
 if (PHP_SAPI !== 'cli') {
-    http_response_code(403);
-    exit('This command can only be run from the CLI.');
+    fwrite(STDERR, "This command can only be run from the CLI.\n");
+    exit(1);
 }
 
-require_once __DIR__ . '/../config/path.php';
-require_once ROOT_PATH . '/vendor/autoload.php';
-require_once ROOT_PATH . '/app/Helpers/helper.php';
+$cachePath = dirname(__DIR__) . '/storage/cache';
 
-use Bhitti\Cache\Cache;
-
-$cachePath = STORAGE_PATH . '/cache';
 $failures = [];
 $warnings = [];
+
 $deletedFiles = 0;
 $deletedDirectories = 0;
+
 $storeCleared = false;
 $driver = 'unknown';
 
 /*
 |--------------------------------------------------------------------------
-| Load Effective Configuration
+| Bootstrap Application
 |--------------------------------------------------------------------------
-| Load the same effective configuration used by the application before
-| deleting config.php. This ensures the currently active cache store is
-| cleared first.
+| The application must be booted before deleting config.php so the active
+| cache driver and its effective configuration are available.
 */
 try {
-    require ROOT_PATH . '/bootstrap/config.php';
+    $app = require dirname(__DIR__) . '/bootstrap/app.php';
 
-    $driver = strtolower(trim((string) config('cache.driver', 'file')));
+    $app->boot();
 
-    require ROOT_PATH . '/bootstrap/cache.php';
+    $driver = strtolower(
+        trim((string) config('cache.driver', 'file'))
+    );
 
+    /*
+    |--------------------------------------------------------------------------
+    | Clear Active Cache Store
+    |--------------------------------------------------------------------------
+    | Cache::flush() must be prefix-scoped for Redis and Memcached. It must
+    | never globally flush a shared Redis database or Memcached server.
+    */
     Cache::flush();
+
     $storeCleared = true;
 
     if ($driver === 'apcu') {
-        $warnings[] = 'APCu was cleared only for the current CLI SAPI. PHP-FPM or Apache APCu storage may require a web-process restart or a web-context clear command.';
+        $warnings[] = 'APCu was cleared only for the CLI process. PHP-FPM or Apache APCu storage may require a web-context clear operation or process restart.';
     }
 } catch (Throwable $exception) {
-    $failures[] = "Unable to clear the active [{$driver}] cache store: {$exception->getMessage()}";
+    $failures[] = sprintf(
+        'Unable to clear the active [%s] cache store: %s',
+        $driver,
+        $exception->getMessage()
+    );
 }
 
 /*
 |--------------------------------------------------------------------------
-| Clear Generated Files
+| Clear Generated Cache Files
 |--------------------------------------------------------------------------
-| Preserve repository placeholder/documentation files while removing
-| config cache, route cache, file-cache entries, and nested cache folders.
+| This removes:
+|
+| - Config cache
+| - Route cache
+| - File-cache entries
+| - Generated nested cache directories
+|
+| Repository placeholder and documentation files are preserved.
 */
 if (is_dir($cachePath)) {
     $protectedFiles = [
@@ -61,39 +79,79 @@ if (is_dir($cachePath)) {
         'README.md',
     ];
 
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($cachePath, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST
-    );
+    try {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $cachePath,
+                FilesystemIterator::SKIP_DOTS
+            ),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
 
-    foreach ($iterator as $item) {
-        $path = $item->getPathname();
-        if (in_array($item->getFilename(), $protectedFiles, true)) {
-            continue;
-        }
+        foreach ($iterator as $item) {
+            $path = $item->getPathname();
+            $filename = $item->getFilename();
 
-        if ($item->isLink() || $item->isFile()) {
-            if (@unlink($path)) {
-                $deletedFiles++;
-            } else {
-                $failures[] = "Unable to delete file: {$path}";
+            if (in_array($filename, $protectedFiles, true)) {
+                continue;
             }
 
-            continue;
-        }
+            if ($item->isLink() || $item->isFile()) {
+                if (@unlink($path)) {
+                    $deletedFiles++;
+                } else {
+                    $failures[] = "Unable to delete file: {$path}";
+                }
 
-        if ($item->isDir()) {
+                continue;
+            }
+
+            if (!$item->isDir()) {
+                continue;
+            }
+
+            /*
+             * A directory may still contain a protected .gitkeep or README.
+             * In that case it should remain and must not be reported as an
+             * error.
+             */
+            $contents = @scandir($path);
+
+            if ($contents === false) {
+                $failures[] = "Unable to read directory: {$path}";
+                continue;
+            }
+
+            $remainingItems = array_diff($contents, ['.', '..']);
+
+            if ($remainingItems !== []) {
+                continue;
+            }
+
             if (@rmdir($path)) {
                 $deletedDirectories++;
             } elseif (is_dir($path)) {
                 $failures[] = "Unable to delete directory: {$path}";
             }
         }
+    } catch (Throwable $exception) {
+        $failures[] = 'Unable to scan the cache directory: '
+            . $exception->getMessage();
     }
 }
 
+clearstatcache();
+
+/*
+|--------------------------------------------------------------------------
+| Output Result
+|--------------------------------------------------------------------------
+*/
 if ($storeCleared) {
-    fwrite(STDOUT, "Application cache store cleared: {$driver}\n");
+    fwrite(
+        STDOUT,
+        "Application cache store cleared: {$driver}\n"
+    );
 }
 
 fwrite(

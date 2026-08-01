@@ -1,10 +1,12 @@
 <?php
+
+// Incomplete this file. we will fixed 
+
 // Command: php run cache:route
 // Caches FastRoute dispatcher for production performance
+require dirname(__DIR__) . '/bootstrap/app.php';
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
-$cacheFile = __DIR__ . '/../storage/cache/route.cache';
+$cacheFile = STORAGE_PATH . '/cache/route.cache';
 
 // Clear existing cache
 if (file_exists($cacheFile)) {
@@ -14,7 +16,7 @@ if (file_exists($cacheFile)) {
 
 // Generate new cache by running dispatcher
 $dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $route) {
-    require_once __DIR__ . '/../config/routes.php';
+    require_once ROOT_PATH . '/config/routes.php';
 }, [
     'cacheFile' => $cacheFile,
     'cacheDisabled' => false,  // Force cache generation
