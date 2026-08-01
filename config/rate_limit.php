@@ -15,7 +15,7 @@ return [
 
     'prefix' => env(
         'RATE_LIMIT_PREFIX',
-        'pkathamo:rate-limit:'
+        'bhitti:rate-limit:'
     ),
 
     'web' => [
