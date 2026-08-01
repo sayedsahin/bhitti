@@ -10,7 +10,7 @@
         ]
     },
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "nikic/fast-route": "^1.3",

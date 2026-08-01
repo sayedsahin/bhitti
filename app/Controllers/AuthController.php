@@ -8,6 +8,7 @@ use App\Middlewares\Authenticated;
 use App\Middlewares\Guest;
 use App\Supports\Auth;
 use App\Supports\Role;
+use Bhitti\Http\Middleware\Attributes\Middleware;
 use Bhitti\Session\Cookie;
 use Bhitti\Session\RememberToken;
 use Bhitti\Validation\ValidationException;
@@ -18,8 +19,6 @@ class AuthController extends Controller
 
 	public function __construct()
 	{
-		// $this->middleware(RateLimit::class);
-		// $this->middleware(Csrf::class);
 	}
 
 	public function login()
@@ -94,17 +93,16 @@ class AuthController extends Controller
 		return response()->redirect('/')->with(['success' => 'Login Successful']);
 	}
 
+	#[Middleware(Guest::class)]
 	public function registration()
 	{
-		$this->middleware(Guest::class);
 		return view('auth.register', ['title' => 'Register']);
 	}
 
 
-
+	#[Middleware(Guest::class)]
 	public function registrationProcess()
 	{
-		$this->middleware(Guest::class);
 
 		/*
 		|-----------------------------------------------------------
@@ -173,7 +171,6 @@ class AuthController extends Controller
 
 	public function logout()
 	{
-		$this->middleware(Authenticated::class);
 		$userId = Auth::id();
 
 		if ($userId) {
@@ -184,9 +181,9 @@ class AuthController extends Controller
 		return response()->redirect('/login');
 	}
 
+	#[Middleware(Guest::class)]
 	public function forgot()
 	{
-		$this->middleware(Guest::class);
 		return view('forgot_password');
 	}
 }

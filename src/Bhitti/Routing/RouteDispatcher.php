@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Bhitti\Routing;
 
 use Bhitti\Core\Container;
+use Bhitti\Http\Middleware\Attributes\Middleware;
 use Bhitti\Http\Middleware\MiddlewareKernel;
 use Bhitti\Http\Response;
 use FastRoute\Dispatcher as FastRouteDispatcher;
+use ReflectionClass;
+use ReflectionMethod;
 
 final class RouteDispatcher
 {
+    private static array $middlewareCache = [];
     public function __construct(
         private Container $container,
         private MiddlewareKernel $middleware
@@ -64,7 +68,16 @@ final class RouteDispatcher
 
     private function found(array $handler, array $vars): void
     {
-        $middlewares = $handler[2] ?? [];
+        $controller = $this->container->make($handler[0]);
+        $action = $handler[1];
+
+        $routeMiddleware = $handler[2] ?? [];
+        $controllerMiddleware = $this->controllerMiddlewares($controller, $action);
+
+        $middlewares = array_merge(
+            $routeMiddleware,
+            $controllerMiddleware
+        );
 
         $middlewareResponse = $this->middleware->handle($middlewares);
 
@@ -72,9 +85,6 @@ final class RouteDispatcher
             $middlewareResponse->send();
             return;
         }
-
-        $controller = $this->container->make($handler[0]);
-        $action = $handler[1];
 
         $result = $controller->$action(...array_values($vars));
 
@@ -89,5 +99,44 @@ final class RouteDispatcher
         if (is_string($result)) {
             echo $result;
         }
+    }
+
+    private function controllerMiddlewares(object $controller, string $action): array
+    {
+        $key = $controller::class . '@' . $action;
+
+        if (isset(self::$middlewareCache[$key])) {
+            return self::$middlewareCache[$key];
+        }
+
+        $middlewares = [];
+
+        $class = new ReflectionClass($controller);
+
+        foreach (
+            $class->getAttributes(Middleware::class)
+            as $attribute
+        ) {
+            $definition = $attribute->newInstance();
+
+            $middlewares[] = $definition->arguments === []
+                ? $definition->class
+                : [$definition->class, $definition->arguments];
+        }
+
+        $method = new ReflectionMethod($controller, $action);
+
+        foreach (
+            $method->getAttributes(Middleware::class)
+            as $attribute
+        ) {
+            $definition = $attribute->newInstance();
+
+            $middlewares[] = $definition->arguments === []
+                ? $definition->class
+                : [$definition->class, $definition->arguments];
+        }
+
+        return self::$middlewareCache[$key] = $middlewares;
     }
 }
