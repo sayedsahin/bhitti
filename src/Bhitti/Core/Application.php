@@ -43,12 +43,7 @@ final class Application
 
         $this->container->instance(Request::class, $request);
 
-        if (!$this->booted) {
-
-            $this->bootCoreServices($request);
-            $this->bootApplicationServices();
-            $this->booted = true;
-        }
+        $this->boot($request->isApi());
 
 
         $this->container
@@ -56,18 +51,26 @@ final class Application
             ->handle($request);
     }
 
-    private function bootCoreServices(Request $request): void
+    public function boot(bool $isApi = false): void
     {
+        if ($this->booted) {
+            return;
+        }
 
         $this->loadConfiguration();
 
-        \Bhitti\Exception\ExceptionHandler::register(
+        ExceptionHandler::register(
             config('app.debug'),
-            $request->isApi()
+            $isApi
         );
+
         $this->registerCoreServices();
         $this->registerContainerBindings();
         CacheManager::configure((array) config('cache', []));
+
+        $this->bootApplicationServices();
+
+        $this->booted = true;
 
     }
 
@@ -92,14 +95,14 @@ final class Application
 
     private function loadConfiguration(): void
     {
-        $cacheFile = STORAGE_PATH. '/cache/config.php';
+        $cacheFile = STORAGE_PATH. '/cache/config.cache';
 
         if (is_file($cacheFile)) {
             Config::load(
                 ConfigLoader::loadFromCache($cacheFile)
             );
         } else {
-            $envFile = $envFile = ROOT_PATH . '/.env';
+            $envFile = ROOT_PATH . '/.env';
 
             if (is_file($envFile)) {
                 $dotenv = new Dotenv();

@@ -38,9 +38,6 @@ final class Kernel
 
         $middlewareResponse = $this->middleware->handleGlobal($isApi);
 
-        if (!$isApi) {
-            Session::close();
-        }
         if ($middlewareResponse instanceof Response) {
 
             $middlewareResponse->send();
