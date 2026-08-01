@@ -28,9 +28,14 @@ $route->get('/api/home', [HomeController::class, 'apiIndex', [
     BearerAuth::class,
     [RoleMiddleware::class, ['user']]
 ]]);
-$route->post('/api/auth/login', [ApiAuthController::class, 'login']);
-$route->post('/api/auth/register', [ApiAuthController::class, 'register']);
-$route->post('/api/auth/forgot', [ApiAuthController::class, 'forgot']);
-$route->get('/api/auth/verify/{token}', [ApiAuthController::class, 'verify']);
-$route->post('/api/auth/logout', [ApiAuthController::class, 'logout', [BearerAuth::class]]);
-$route->get('/api/auth/profile', [ApiAuthController::class, 'profile', [BearerAuth::class]]);
+
+$route->addGroup('/api', function () use ($route) {
+    $route->addGroup('/auth', function () use ($route) {
+        $route->post('/login', [ApiAuthController::class, 'login']);
+        $route->post('/register', [ApiAuthController::class, 'register']);
+        $route->post('/forgot', [ApiAuthController::class, 'forgot']);
+        $route->get('/verify/{token}', [ApiAuthController::class, 'verify']);
+        $route->post('/logout', [ApiAuthController::class, 'logout', [BearerAuth::class]]);
+        $route->get('/profile', [ApiAuthController::class, 'profile', [BearerAuth::class]]);
+    });
+});
