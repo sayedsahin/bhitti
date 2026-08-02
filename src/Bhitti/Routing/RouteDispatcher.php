@@ -11,10 +11,10 @@ use Bhitti\Http\Response;
 use FastRoute\Dispatcher as FastRouteDispatcher;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 
 final class RouteDispatcher
 {
-    private static array $middlewareCache = [];
     public function __construct(
         private Container $container,
         private MiddlewareKernel $middleware
@@ -68,15 +68,16 @@ final class RouteDispatcher
 
     private function found(array $handler, array $vars): void
     {
-        $controller = $this->container->make($handler[0]);
-        $action = $handler[1];
 
-        $routeMiddleware = $handler[2] ?? [];
-        $controllerMiddleware = $this->controllerMiddlewares($controller, $action);
+        $controllerClass = $handler[0];
+        $action = $handler[1];
+        $class = new ReflectionClass($controllerClass);
+
+        $method = $class->getMethod($action);
 
         $middlewares = array_merge(
-            $routeMiddleware,
-            $controllerMiddleware
+            $handler[2] ?? [],
+            $this->controllerMiddlewares($class, $method)
         );
 
         $middlewareResponse = $this->middleware->handle($middlewares);
@@ -86,12 +87,21 @@ final class RouteDispatcher
             return;
         }
 
-        $result = $controller->$action(...array_values($vars));
+        /*
+        * Controller is instantiated only after middleware passes.
+        */
+        $controller = $this->container->make($controllerClass);
+        $arguments = $this->routeArguments(
+            $method,
+            $vars
+        );
+        $result = $controller->$action(...$arguments);
 
         if ($result instanceof Response) {
             $result->send();
             return;
         }
+
 
         /*
          * Temporary support while view() directly renders output.
@@ -101,17 +111,9 @@ final class RouteDispatcher
         }
     }
 
-    private function controllerMiddlewares(object $controller, string $action): array
+    private function controllerMiddlewares(ReflectionClass $class,  ReflectionMethod $method): array
     {
-        $key = $controller::class . '@' . $action;
-
-        if (isset(self::$middlewareCache[$key])) {
-            return self::$middlewareCache[$key];
-        }
-
         $middlewares = [];
-
-        $class = new ReflectionClass($controller);
 
         foreach (
             $class->getAttributes(Middleware::class)
@@ -124,8 +126,6 @@ final class RouteDispatcher
                 : [$definition->class, $definition->arguments];
         }
 
-        $method = new ReflectionMethod($controller, $action);
-
         foreach (
             $method->getAttributes(Middleware::class)
             as $attribute
@@ -137,6 +137,34 @@ final class RouteDispatcher
                 : [$definition->class, $definition->arguments];
         }
 
-        return self::$middlewareCache[$key] = $middlewares;
+        return $middlewares;
+    }
+
+    private function routeArguments(ReflectionMethod $method, array $vars): array
+    {
+        $arguments = array_values($vars);
+        $parameters = $method->getParameters();
+
+        foreach ($arguments as $index => $value) {
+            $parameter = $parameters[$index] ?? null;
+
+            if ($parameter === null) {
+                break;
+            }
+
+            $type = $parameter->getType();
+
+            if (!$type instanceof ReflectionNamedType || !$type->isBuiltin()) {
+                continue;
+            }
+
+            $arguments[$index] = match ($type->getName()) {
+                'int' => $$integer = filter_var($value, FILTER_VALIDATE_INT),
+                'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
+                default => $value,
+            };
+        }
+
+        return $arguments;
     }
 }
