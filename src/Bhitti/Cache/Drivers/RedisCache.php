@@ -13,10 +13,10 @@ final class RedisCache implements CacheInterface
     private array $config;
     private string $prefix;
 
-    public function __construct(array $config)
+    public function __construct(array $config, string $prefix = 'bhitti:cache:')
     {
         $this->config = $config;
-        $this->prefix = $config['prefix'] ?? 'cache:';
+        $this->prefix = $prefix;
     }
 
     private function redis(): Redis

@@ -1,4 +1,8 @@
 {
+    "name": "bhitti/framework",
+    "description": "A lightweight, high-performance PHP framework.",
+    "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Bhitti\\": "src/Bhitti/",

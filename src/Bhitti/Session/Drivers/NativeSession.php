@@ -20,15 +20,20 @@ final class NativeSession implements SessionInterface
             return;
         }
 
+        session_name($this->config['name'] ?? 'BHITTISESSID');
+
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start([
-                'use_strict_mode'   => 1,
-                'use_only_cookies'  => 1,
-                'cookie_httponly'   => true,
-                'cookie_secure'    => $this->config['secure'] && TrustedProxy::isSecureRequest($_SERVER),
-                'cookie_samesite'  => $this->config['samesite'],
-                'gc_maxlifetime'   => (int) $this->config['lifetime'],
-            ]);
+            'use_strict_mode' => 1,
+            'use_only_cookies' => 1,
+            'cookie_lifetime' => 0,
+            'cookie_path' => $this->config['path'],
+            'cookie_domain' => $this->config['domain'] ,
+            'cookie_httponly' => $this->config['httponly'],
+            'cookie_secure' => $this->config['secure'] && TrustedProxy::isSecureRequest($_SERVER),
+            'cookie_samesite' => $this->config['samesite'] ?? 'Lax',
+            'gc_maxlifetime' => $this->config['lifetime'] ?? 7200,
+        ]);
         }
 
         $this->started = true;

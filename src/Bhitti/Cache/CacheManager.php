@@ -20,23 +20,10 @@ final class CacheManager
 
             return match ($driver) {
                 'array' => new ArrayCache(),
-
-                'apcu' => new ApcuCache(
-                    (string) ($config['prefix'] ?? '')
-                ),
-
-                'file' => new FileCache(
-                    (string) ($config['path'] ?? STORAGE_PATH . '/cache')
-                ),
-
-                'redis' => new RedisCache(
-                    (array) config('database.redis', [])
-                ),
-
-                'memcached' => new MemcachedCache(
-                    (array) config('database.memcached', []),
-                    (string) ($config['prefix'] ?? '')
-                ),
+                'apcu' => new ApcuCache($config['prefix']),
+                'file' => new FileCache($config['path']),
+                'redis' => new RedisCache(config('database.redis'), $config['prefix']),
+                'memcached' => new MemcachedCache(config('database.memcached'), $config['prefix']),
 
                 default => throw new RuntimeException(
                     'Unsupported cache driver: ' . $driver

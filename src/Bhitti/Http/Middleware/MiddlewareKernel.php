@@ -81,10 +81,16 @@ final class MiddlewareKernel
         $class = $middleware[0] ?? null;
         $arguments = $middleware[1] ?? [];
 
-        if (!is_string($class)) {
-            throw new RuntimeException('Invalid middleware definition.');
+        if (!is_string($class) || !is_array($arguments)) {
+            throw new RuntimeException(
+                'Invalid middleware definition.'
+            );
         }
 
-        return new $class($arguments);
+        return $this->container->makeWith(
+            $class,
+            [$arguments]
+        );
+
     }
 }

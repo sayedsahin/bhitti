@@ -6,9 +6,7 @@ use App\Controllers\HomeController;
 use App\Middlewares\Authenticated;
 use App\Middlewares\BearerAuth;
 use App\Middlewares\Guest;
-use App\Middlewares\RateLimit;
 use App\Middlewares\RoleMiddleware;
-use App\Middlewares\WebHeaders;
 
 /**
  * @var FastRoute\RouteCollector $route

@@ -38,7 +38,7 @@ final class RedisSession implements SessionInterface
 
         $this->registerHandler();
 
-        $name = (string) ($this->sessionConfig['name'] ?? 'BHITTISESSID');
+        $name = $this->sessionConfig['name'];
 
         if ($name !== '') {
             session_name($name);
@@ -47,13 +47,12 @@ final class RedisSession implements SessionInterface
         $started = session_start([
             'use_strict_mode' => 1,
             'use_only_cookies' => 1,
-            'cookie_lifetime' => (int) ($this->sessionConfig['cookie_lifetime'] ?? 0),
-            'cookie_path' => (string) ($this->sessionConfig['path'] ?? '/'),
-            'cookie_domain' => (string) ($this->sessionConfig['domain'] ?? ''),
+            'cookie_lifetime' => 0,
+            'cookie_path' => $this->sessionConfig['path'],
+            'cookie_domain' => $this->sessionConfig['domain'],
             'cookie_httponly' => true,
-            'cookie_secure' => (bool) ($this->sessionConfig['secure'] ?? true)
-                && TrustedProxy::isSecureRequest($_SERVER),
-            'cookie_samesite' => (string) ($this->sessionConfig['samesite'] ?? 'Lax'),
+            'cookie_secure' => $this->sessionConfig['secure'] && TrustedProxy::isSecureRequest($_SERVER),
+            'cookie_samesite' => $this->sessionConfig['samesite'],
             'gc_maxlifetime' => $this->lifetime(),
         ]);
 
@@ -234,10 +233,10 @@ final class RedisSession implements SessionInterface
         }
 
         $redis = new Redis();
-        $host = (string) ($this->redisConfig['host'] ?? '127.0.0.1');
-        $port = (int) ($this->redisConfig['port'] ?? 6379);
-        $timeout = (float) ($this->redisConfig['timeout'] ?? 2.0);
-        $readTimeout = (float) ($this->redisConfig['read_timeout'] ?? 2.0);
+        $host = $this->redisConfig['host'];
+        $port = $this->redisConfig['port'];
+        $timeout = $this->redisConfig['timeout'];
+        $readTimeout = $this->redisConfig['read_timeout'];
 
         try {
             if (!$redis->connect($host, $port, $timeout)) {
@@ -255,15 +254,15 @@ final class RedisSession implements SessionInterface
 
             if ($password !== null && $password !== '') {
                 $credentials = $username !== null && $username !== ''
-                    ? [(string) $username, (string) $password]
-                    : (string) $password;
+                    ? [$username, $password]
+                    : $password;
 
                 if (!$redis->auth($credentials)) {
                     throw new RuntimeException('Redis authentication failed.');
                 }
             }
 
-            $database = (int) ($this->redisConfig['session_db'] ?? 3);
+            $database = $this->redisConfig['session_db'];
 
             if (!$redis->select($database)) {
                 throw new RuntimeException(
@@ -279,7 +278,6 @@ final class RedisSession implements SessionInterface
 
     private function acquireLock(string $id): void
     {
-        $config = (array) ($this->sessionConfig['redis'] ?? []);
 
         if (!(bool) ($this->sessionConfig['lock'] ?? true)) {
             return;
@@ -292,9 +290,9 @@ final class RedisSession implements SessionInterface
         $redis = $this->redis();
         $lockKey = $this->lockKey($id);
         $token = bin2hex(random_bytes(16));
-        $ttl = max(1000, (int) (($this->sessionConfig['lock_ttl'] ?? 10) * 1000));
-        $wait = max(0.0, (float) ($this->sessionConfig['lock_wait'] ?? 2.0));
-        $sleep = max(1000, (int) ($this->sessionConfig['lock_sleep'] ?? 20000));
+        $ttl = max(1000, $this->sessionConfig['lock_ttl'] * 1000);
+        $wait = max(0.0, $this->sessionConfig['lock_wait'] ?? 2.0);
+        $sleep = max(1000, ($this->sessionConfig['lock_sleep'] ?? 20000));
         $deadline = microtime(true) + $wait;
 
         do {
@@ -369,8 +367,7 @@ LUA,
 
     private function prefix(): string
     {
-
-        return (string) $this->sessionConfig['prefix'] ?? 'app_session:';
+        return $this->sessionConfig['prefix'] ?? 'bhitti:session:';
     }
 
     private function lifetime(): int

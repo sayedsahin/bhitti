@@ -32,9 +32,9 @@ $command = $argv[1] ?? 'list';
 $arguments = array_slice($argv, 2);
 
 if (in_array($command, ['list', '--help', '-h'], true)) {
-    fwrite(STDOUT, "Pkathamo Command Line\n\n");
+    fwrite(STDOUT, "Bhitti Command Line\n\n");
     fwrite(STDOUT, "Usage:\n");
-    fwrite(STDOUT, "  php pkathamo <command> [options]\n\n");
+    fwrite(STDOUT, "  php Bhitti <command> [options]\n\n");
     fwrite(STDOUT, "Available commands:\n");
 
     $width = max(array_map('strlen', array_keys($commands)));
@@ -55,7 +55,7 @@ if (in_array($command, ['list', '--help', '-h'], true)) {
 
 if (!isset($commands[$command])) {
     fwrite(STDERR, "Unknown command: {$command}\n\n");
-    fwrite(STDERR, "Run `php pkathamo list` to see available commands.\n");
+    fwrite(STDERR, "Run `php Bhitti list` to see available commands.\n");
 
     exit(1);
 }

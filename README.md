@@ -1,6 +1,6 @@
-# Pkathamo
+# Bhitti
 
-**Pkathamo** is a lightweight PHP framework built around three core principles: **Performance**, **Simplicity** and **Efficiency**.
+**Bhitti** is a lightweight PHP framework built around three core principles: **Performance**, **Simplicity** and **Efficiency**.
 
 ## Requirements
 
@@ -48,7 +48,7 @@ composer dump-autoload
 Configure the application in `.env`:
 
 ```dotenv
-APP_NAME=Pkathamo
+APP_NAME=Bhitti
 DEBUG_MODE=true
 BASE_URL=http://127.0.0.1:8000
 APP_TIMEZONE=UTC
@@ -132,8 +132,8 @@ final class HomeController extends Controller
     public function index(): void
     {
         view('home', [
-            'title' => 'Pkathamo',
-            'heading' => 'Welcome to Pkathamo',
+            'title' => 'Bhitti',
+            'heading' => 'Welcome to Bhitti',
             'description' => 'A lightweight PHP framework for super-fast, simple and efficient web applications.',
         ]);
     }
@@ -532,7 +532,7 @@ Additional rules include:
 
 ## Database
 
-Pkathamo uses PDO for database access.
+Bhittiuses PDO for database access.
 
 ```php
 $users = db()
@@ -574,7 +574,7 @@ $users = User::query()
     ->get();
 ```
 
-Pkathamo models do not provide a full Active Record lifecycle, dirty tracking or automatic relationships.
+Bhitti models do not provide a full Active Record lifecycle, dirty tracking or automatic relationships.
 
 They provide a fixed table, reusable query methods and clean Query Builder access.
 
@@ -927,7 +927,7 @@ Stateful objects such as Query Builder and Response should not be registered as 
 
 ## Exception Handling
 
-Pkathamo registers a central handler for:
+Bhitti registers a central handler for:
 
 - uncaught exceptions
 - PHP errors
@@ -1050,7 +1050,7 @@ pkathamo/
 
 ## Security
 
-Pkathamo includes:
+Bhitti includes:
 
 - PDO-bound query values
 - CSRF protection
@@ -1116,7 +1116,7 @@ runtime cache files
 
 Complete documentation is available in:
 
-[Read the Pkathamo Documentation](docs/README.md)
+[Read the Bhitti Documentation](docs/README.md)
 
 The documentation includes dedicated guides for:
 
@@ -1140,7 +1140,7 @@ The documentation includes dedicated guides for:
 
 ## Intended Use
 
-Pkathamo is suitable for:
+Bhitti is suitable for:
 
 - web applications
 - REST APIs

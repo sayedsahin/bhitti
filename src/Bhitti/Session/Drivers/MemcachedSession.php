@@ -40,9 +40,7 @@ final class MemcachedSession implements SessionInterface
 
         $this->registerHandler();
 
-        session_name(
-            (string) ($this->sessionConfig['name'] ?? 'BHITTISESSID')
-        );
+        session_name($this->sessionConfig['name']);
 
         if (!session_start([
             'cookie_lifetime' => 0,
@@ -122,16 +120,30 @@ final class MemcachedSession implements SessionInterface
             return;
         }
 
-        session_set_save_handler(
-            fn() => true,
-            fn() => $this->releaseLock(),
+        $registered = session_set_save_handler(
+            static fn(
+                string $savePath,
+                string $sessionName
+            ): bool => true,
+            function (): bool {
+                $this->releaseLock();
+                return true;
+            },
             fn(string $id) => $this->read($id),
             fn(string $id, string $data) => $this->write($id, $data),
             fn(string $id) => $this->delete($id),
-            fn() => true
+            static fn(int $maxLifetime): int => 0
         );
 
         $this->handlerRegistered = true;
+
+        if (!$registered) {
+            throw new RuntimeException(
+                'Unable to register Memcached session handler.'
+            );
+        }
+
+    $this->handlerRegistered = true;
     }
 
     private function read(string $id): string
@@ -190,10 +202,7 @@ final class MemcachedSession implements SessionInterface
 
     private function key(string $id): string
     {
-        return rtrim(
-            (string) ($this->sessionConfig['prefix'] ?? 'bhitti:session:'),
-            ':'
-        ) . ':' . $id;
+        return rtrim($this->sessionConfig['prefix'], ':') . ':' . $id;
     }
 
     private function lockKey(string $id): string
@@ -212,7 +221,7 @@ final class MemcachedSession implements SessionInterface
         if ($this->client()->add(
             $this->lockKey($id),
             $token,
-            (int) ($this->sessionConfig['lock_ttl'] ?? 10)
+            $this->sessionConfig['lock_ttl']
         )) {
             $this->lockedSessionId = $id;
             $this->lockToken = $token;
@@ -239,8 +248,6 @@ final class MemcachedSession implements SessionInterface
 
     private function lifetime(): int
     {
-        return (int) (
-            $this->sessionConfig['lifetime'] ?? 7200
-        );
+        return $this->sessionConfig['lifetime'];
     }
 }

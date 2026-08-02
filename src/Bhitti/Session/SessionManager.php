@@ -18,8 +18,8 @@ final class SessionManager
 
         $driver = match ($driverName) {
             'native' => new NativeSession($config),
-            'redis' => new RedisSession($config, config('database.redis', [])),
-            'memcached' => new MemcachedSession($config, config('database.memcached', [])),
+            'redis' => new RedisSession($config, config('database.redis')),
+            'memcached' => new MemcachedSession($config, config('database.memcached')),
             'null' => new NullSession($config),
 
             default => throw new RuntimeException(
