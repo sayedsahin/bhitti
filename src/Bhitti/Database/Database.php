@@ -16,8 +16,8 @@ final class Database
 
     public function __construct()
     {
-        $this->config = (array) config('database.connections', []);
-        $this->defaultConnection = (string) config('database.default', 'mysql');
+        $this->config = config('database.connections');
+        $this->defaultConnection = config('database.default');
     }
 
     public function connection(?string $name = null): PDO
@@ -45,7 +45,7 @@ final class Database
 
     private function connectionName(?string $name): string
     {
-        $name = trim((string) ($name ?? $this->defaultConnection));
+        $name = trim($name ?? $this->defaultConnection);
 
         if ($name === '') {
             throw new InvalidArgumentException('Database connection name cannot be empty.');
@@ -67,7 +67,7 @@ final class Database
 
     private function driverName(array $config): string
     {
-        $driver = strtolower(trim((string) ($config['driver'] ?? '')));
+        $driver = strtolower(trim(($config['driver'])));
 
         if (!in_array($driver, ['mysql', 'pgsql', 'sqlite'], true)) {
             throw new InvalidArgumentException("Unsupported database driver: {$driver}");
@@ -79,8 +79,8 @@ final class Database
     private function connect(array $config, string $driver): PDO
     {
         $dsn = $this->dsn($driver, $config);
-        $username = $driver === 'sqlite' ? null : (string) ($config['username'] ?? '');
-        $password = $driver === 'sqlite' ? null : (string) ($config['password'] ?? '');
+        $username = $driver === 'sqlite' ? null : $config['username'];
+        $password = $driver === 'sqlite' ? null : $config['password'];
 
         $pdo = new PDO($dsn, $username, $password, $this->options($driver, $config));
 
@@ -102,26 +102,22 @@ final class Database
 
     private function mysqlDsn(array $config): string
     {
-        $host = (string) ($config['host'] ?? '127.0.0.1');
-        $port = (int) ($config['port'] ?? 3306);
-        $database = (string) ($config['database'] ?? '');
-        $charset = (string) ($config['charset'] ?? 'utf8mb4');
+        $host = $config['host'];
+        $port = $config['port'];
+        $database = $config['database'];
+        $charset = $config['charset'];
 
         return "mysql:host={$host};port={$port};dbname={$database};charset={$charset}";
     }
 
     private function pgsqlDsn(array $config): string
     {
-        $host = (string) ($config['host'] ?? '127.0.0.1');
-        $port = (int) ($config['port'] ?? 5432);
-        $database = (string) ($config['database'] ?? '');
-
-        return "pgsql:host={$host};port={$port};dbname={$database}";
+        return "pgsql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
     }
 
     private function sqliteDsn(array $config): string
     {
-        $database = trim((string) ($config['database'] ?? ''));
+        $database = trim($config['database']);
 
         if ($database === '') {
             throw new InvalidArgumentException('SQLite database path cannot be empty.');
@@ -139,7 +135,7 @@ final class Database
 
         if ($driver !== 'sqlite') {
             $options[PDO::ATTR_EMULATE_PREPARES] = false;
-            $options[PDO::ATTR_PERSISTENT] = (bool) ($config['options']['persistent'] ?? false);
+            $options[PDO::ATTR_PERSISTENT] = $config['options']['persistent'];
         }
 
         return $options;
@@ -147,12 +143,12 @@ final class Database
 
     private function configureSqlite(PDO $pdo, array $config): void
     {
-        $pdo->exec('PRAGMA foreign_keys = ' . ((bool) ($config['foreign_keys'] ?? true) ? 'ON' : 'OFF'));
+        $pdo->exec('PRAGMA foreign_keys = ' . $config['foreign_keys'] ? 'ON' : 'OFF');
 
-        $busyTimeout = max(0, (int) ($config['busy_timeout'] ?? 5000));
+        $busyTimeout = max(0, $config['busy_timeout']);
         $pdo->exec("PRAGMA busy_timeout = {$busyTimeout}");
 
-        $journalMode = strtoupper(trim((string) ($config['journal_mode'] ?? '')));
+        $journalMode = strtoupper(trim($config['journal_mode']));
 
         if ($journalMode !== '') {
             if (!in_array($journalMode, ['DELETE', 'TRUNCATE', 'PERSIST', 'MEMORY', 'WAL', 'OFF'], true)) {
@@ -162,7 +158,7 @@ final class Database
             $pdo->exec("PRAGMA journal_mode = {$journalMode}");
         }
 
-        $synchronous = strtoupper(trim((string) ($config['synchronous'] ?? '')));
+        $synchronous = strtoupper(trim($config['synchronous']));
 
         if ($synchronous !== '') {
             if (!in_array($synchronous, ['OFF', 'NORMAL', 'FULL', 'EXTRA'], true)) {

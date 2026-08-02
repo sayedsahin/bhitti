@@ -279,7 +279,7 @@ final class RedisSession implements SessionInterface
     private function acquireLock(string $id): void
     {
 
-        if (!(bool) ($this->sessionConfig['lock'] ?? true)) {
+        if (!$this->sessionConfig['lock']) {
             return;
         }
 

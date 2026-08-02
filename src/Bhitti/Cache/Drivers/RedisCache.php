@@ -27,10 +27,10 @@ final class RedisCache implements CacheInterface
 
         $redis = new Redis();
 
-        $host = (string) ($this->config['host'] ?? '127.0.0.1');
-        $port = (int) ($this->config['port'] ?? 6379);
-        $timeout = (float) ($this->config['timeout'] ?? 2.0);
-        $readTimeout = (float) ($this->config['read_timeout'] ?? 2.0);
+        $host = $this->config['host'];
+        $port = $this->config['port'];
+        $timeout = $this->config['timeout'];
+        $readTimeout = $this->config['read_timeout'];
 
         try {
             if (!$redis->connect($host, $port, $timeout)) {
@@ -54,11 +54,7 @@ final class RedisCache implements CacheInterface
                 }
             }
 
-            $database = (int) (
-                $this->config['cache_db']
-                ?? $this->config['db']
-                ?? 0
-            );
+            $database = $this->config['cache_db'];
 
             if (!$redis->select($database)) {
                 throw new RuntimeException("Unable to select Redis database {$database}.");

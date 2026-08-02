@@ -53,10 +53,7 @@ final class RateLimiter
 
     private static function resolve(): RateLimitDriverInterface
     {
-        $driver = strtolower(trim((string) config(
-            'rate_limit.driver',
-            'file'
-        )));
+        $driver = strtolower(trim(config('rate_limit.driver')));
 
         return match ($driver) {
             'file' => new FileDriver(),
@@ -71,12 +68,7 @@ final class RateLimiter
 
     private static function normalizeKey(string $key): string
     {
-        $prefix = (string) config(
-            'rate_limit.prefix',
-            'bhitti:rate-limit:'
-        );
-
-        return $prefix . hash('sha256', $key);
+        return config('rate_limit.prefix') . hash('sha256', $key);
     }
 
     private static function validate(

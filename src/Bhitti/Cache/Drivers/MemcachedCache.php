@@ -40,7 +40,7 @@ final class MemcachedCache implements CacheInterface
         $this->prefix = rtrim($prefix, ':') . ':';
         $this->versionKey = $this->prefix . '__version';
 
-        $persistentId = trim((string) ($config['persistent_id'] ?? ''));
+        $persistentId = trim($config['persistent_id']);
 
         $this->memcached = $persistentId !== ''
             ? new \Memcached($persistentId)
@@ -50,7 +50,7 @@ final class MemcachedCache implements CacheInterface
             $this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
             $this->memcached->setOption(
                 \Memcached::OPT_CONNECT_TIMEOUT,
-                (int) ($config['connect_timeout'] ?? 2000)
+                $config['connect_timeout']
             );
 
             if (count($servers) > 1) {
@@ -102,9 +102,9 @@ final class MemcachedCache implements CacheInterface
         $normalized = [];
 
         foreach ($servers as $server) {
-            $host = (string) ($server['host'] ?? $server[0] ?? '');
-            $port = (int) ($server['port'] ?? $server[1] ?? 11211);
-            $weight = (int) ($server['weight'] ?? $server[2] ?? 0);
+            $host = $server['host'];
+            $port = $server['port'];
+            $weight = $server['weight'];
 
             if ($host === '' || $port < 1 || $port > 65535 || $weight < 0) {
                 throw new InvalidArgumentException('Invalid Memcached server configuration.');

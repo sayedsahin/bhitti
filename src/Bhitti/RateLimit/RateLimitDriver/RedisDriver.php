@@ -40,10 +40,10 @@ LUA;
 
         $this->redis = new Redis();
         $redis_config = config('database.redis');
-        $host = (string) $redis_config['host'];
-        $port = (int) $redis_config['port'];
-        $timeout = (float) $redis_config['timeout'];
-        $readTimeout = (float) $redis_config['read_timeout'];
+        $host = $redis_config['host'];
+        $port = $redis_config['port'];
+        $timeout = $redis_config['timeout'];
+        $readTimeout = $redis_config['read_timeout'];
 
         try {
             if (!$this->redis->connect($host, $port, $timeout)) {
@@ -77,7 +77,7 @@ LUA;
                 }
             }
 
-            $database = (int) $redis_config['rate_limit_db'];
+            $database = $redis_config['rate_limit_db'];
 
             if (!$this->redis->select($database)) {
                 throw new RuntimeException(

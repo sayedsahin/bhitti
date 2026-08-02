@@ -25,7 +25,7 @@ final class MemcachedDriver implements RateLimitDriverInterface
             throw new RuntimeException('No Memcached server is configured.');
         }
 
-        $persistentId = trim((string) ($config['persistent_id'] ?? ''));
+        $persistentId = trim($config['persistent_id']);
 
         $this->memcached = $persistentId !== ''
             ? new Memcached($persistentId)
@@ -34,7 +34,7 @@ final class MemcachedDriver implements RateLimitDriverInterface
         $this->memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
         $this->memcached->setOption(
             Memcached::OPT_CONNECT_TIMEOUT,
-            (int) ($config['connect_timeout'] ?? 2000)
+            $config['connect_timeout']
         );
 
         if (count($servers) > 1) {
@@ -45,7 +45,7 @@ final class MemcachedDriver implements RateLimitDriverInterface
             $this->memcached->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
             $this->memcached->setOption(
                 Memcached::OPT_CONNECT_TIMEOUT,
-                (int) ($config['connect_timeout'] ?? 2000)
+                $config['connect_timeout']
             );
 
             if (count($servers) > 1) {
@@ -155,9 +155,9 @@ final class MemcachedDriver implements RateLimitDriverInterface
         $normalized = [];
 
         foreach ($servers as $server) {
-            $host = trim((string) ($server['host']));
-            $port = (int) ($server['port']);
-            $weight = (int) ($server['weight']);
+            $host = trim($server['host']);
+            $port = $server['port'];
+            $weight = $server['weight'];
 
             if ($host === '') {
                 throw new RuntimeException('Memcached server host cannot be empty.');
