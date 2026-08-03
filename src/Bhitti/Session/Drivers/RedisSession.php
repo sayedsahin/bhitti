@@ -264,6 +264,7 @@ final class RedisSession implements SessionInterface
 
             $database = $this->redisConfig['session_db'];
 
+
             if (!$redis->select($database)) {
                 throw new RuntimeException(
                     "Unable to select Redis database {$database}."

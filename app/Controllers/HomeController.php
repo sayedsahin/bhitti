@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Supports\Auth;
@@ -10,7 +12,12 @@ class HomeController extends Controller
 	{
 		$users = [];
 		if (Auth::check()) {
-			$users[] = Auth::user();
+			$user = Auth::user();
+
+			$users = cache()->remember('cache_user_' . $user->id, 60, function () {
+				return db()->table('users')->limit(10)->get();
+			});
+
 		}
 
 		return view('home', [

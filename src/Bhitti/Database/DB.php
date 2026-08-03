@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bhitti\Database;
 
 use Bhitti\Database\QueryBuilder;

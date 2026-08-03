@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bhitti\Session\Drivers;
 
 use Bhitti\Session\SessionInterface;

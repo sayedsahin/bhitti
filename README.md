@@ -56,7 +56,7 @@ APP_TIMEZONE=UTC
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_NAME=pkathamo
+DB_NAME=bhitti
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -66,10 +66,10 @@ SESSION_SAMESITE=Lax
 SESSION_SECURE=false
 
 CACHE_DRIVER=file
-CACHE_PREFIX=pkathamo:cache:
+CACHE_PREFIX=bhitti:cache:
 
 RATE_LIMIT_STORE=file
-RATE_LIMIT_PREFIX=pkathamo:rate-limit:
+RATE_LIMIT_PREFIX=bhitti:rate-limit:
 ```
 
 After changing `.env` or a cached configuration file, rebuild the configuration cache:
