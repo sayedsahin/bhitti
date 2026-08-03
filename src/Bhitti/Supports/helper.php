@@ -4,7 +4,7 @@ use Bhitti\Cache\Cache;
 use Bhitti\Database\Database;
 use Bhitti\Session\Session;
 use Bhitti\Config\Config;
-use Bhitti\Config\Env;
+use Bhitti\Config\Environment;
 use App\Supports\Flash;
 use Bhitti\Database\DB;
 use Bhitti\Http\Request;
@@ -58,7 +58,7 @@ if (!function_exists('env')) {
     {
         static $env = null;
         if ($env === null) {
-            $env = new Env;
+            $env = new Environment;
         }
 
         return $env->get($key, $default);

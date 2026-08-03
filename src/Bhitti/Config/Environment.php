@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bhitti\Config;
 
-final class Env
+final class Environment
 {
     public function get(string $key, mixed $default = null): mixed
     {

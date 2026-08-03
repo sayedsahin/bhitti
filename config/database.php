@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+$redisDb = env('REDIS_DB');
+
 return [
     'default' => (string) env('DB_CONNECTION', 'mysql'),
 
@@ -47,12 +49,12 @@ return [
         'username' => env('REDIS_USERNAME', null),
         'password' => env('REDIS_PASSWORD', null),
 
-        'db' => (int) env('REDIS_DB', 0),
-        'cache_db' => (int) env('REDIS_CACHE_DB', 1),
-        'rate_limit_db' => (int) env('REDIS_RATE_LIMIT_DB', 2),
-        'session_db' => (int) env('REDIS_SESSION_DB', 3),
+        'db' => (int) $redisDb ?? 0,
+        'cache_db' => (int) env('REDIS_CACHE_DB',  $redisDb ?? 1),
+        'rate_limit_db' => (int) env('REDIS_RATE_LIMIT_DB',  $redisDb ?? 2),
+        'session_db' => (int) env('REDIS_SESSION_DB',  $redisDb ?? 3),
 
-        'prefix' => (string) env('CACHE_PREFIX', 'app_cache:'),
+        'prefix' => (string) env('CACHE_PREFIX', 'bhitti:cache:'),
         'timeout' => (float) env('REDIS_TIMEOUT', 2.0),
         'read_timeout' => (float) env('REDIS_READ_TIMEOUT', 2.0),
     ],
