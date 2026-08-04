@@ -11,7 +11,7 @@ if (PHP_SAPI !== 'cli') {
 
 require dirname(__DIR__) . '/bootstrap/app.php';
 
-$cacheFile = STORAGE_PATH . '/cache/route.cache';
+$cacheFile = STORAGE_PATH . '/cache/route.cache.php';
 
 if (is_file($cacheFile) && !unlink($cacheFile)) {
     throw new RuntimeException(

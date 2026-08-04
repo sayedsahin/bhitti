@@ -11,7 +11,7 @@ require dirname(__DIR__) . '/bootstrap/app.php';
 
 
 $envFile = ROOT_PATH . '/.env';
-$cacheFile = STORAGE_PATH . '/cache/config.cache';
+$cacheFile = STORAGE_PATH . '/cache/config.cache.php';
 
 if (is_file($envFile)) {
     $dotenv = new Dotenv();

@@ -974,7 +974,7 @@ Read environment values inside config files:
 Configuration is cached in:
 
 ```text
-storage/cache/config.cache
+storage/cache/config.cache.php
 ```
 
 ## Command-Line Tools
@@ -1107,8 +1107,8 @@ Do not distribute:
 
 ```text
 .env
-storage/cache/config.cache
-storage/cache/route.cache
+storage/cache/config.cache.php
+storage/cache/route.cache.php
 runtime cache files
 ```
 

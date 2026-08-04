@@ -95,7 +95,7 @@ final class Application
 
     private function loadConfiguration(): void
     {
-        $cacheFile = STORAGE_PATH . '/cache/config.cache';
+        $cacheFile = STORAGE_PATH . '/cache/config.cache.php';
         $items = null;
 
         if (is_file($cacheFile)) {

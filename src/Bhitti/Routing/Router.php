@@ -20,7 +20,7 @@ final class Router
             },
             [
                 'routeCollector' => RouteCollector::class,
-                'cacheFile' => STORAGE_PATH . '/cache/route.cache',
+                'cacheFile' => STORAGE_PATH . '/cache/route.cache.php',
                 'cacheDisabled' => (bool) config('app.debug', false),
             ]
         );

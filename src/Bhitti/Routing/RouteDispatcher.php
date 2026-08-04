@@ -132,7 +132,13 @@ final class RouteDispatcher
                 default => $value,
             };
 
-            if ($validated === false || $validated === null && $type === 'bool') {
+            $invalid = match ($type) {
+                'int', 'float' => $validated === false,
+                'bool' => $validated === null,
+                default => false,
+            };
+
+            if ($invalid) {
                 return null;
             }
 
