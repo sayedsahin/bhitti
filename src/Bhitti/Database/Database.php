@@ -143,7 +143,7 @@ final class Database
 
     private function configureSqlite(PDO $pdo, array $config): void
     {
-        $pdo->exec('PRAGMA foreign_keys = ' . $config['foreign_keys'] ? 'ON' : 'OFF');
+        $pdo->exec('PRAGMA foreign_keys = ' . ($config['foreign_keys'] ? 'ON' : 'OFF'));
 
         $busyTimeout = max(0, $config['busy_timeout']);
         $pdo->exec("PRAGMA busy_timeout = {$busyTimeout}");
