@@ -39,7 +39,7 @@ final class RouteCollector extends FastRouteCollector
 
         $method = new ReflectionMethod($controllerClass, $action);
 
-       $middlewares = array_merge(
+        $middlewares = array_merge(
             $handler[2] ?? [],
             $this->controllerMiddlewares($method)
         );

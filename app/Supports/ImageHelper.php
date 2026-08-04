@@ -31,7 +31,7 @@ class ImageHelper
 		if ($ex == 'jpg' || $ex == 'jpeg' || $ex == 'jfif') {
 			$src = imagecreatefromjpeg($file);
 			$dst = imagecreatetruecolor($newWidth, $newHeight);
-		}elseif ($ex == 'png') {
+		} elseif ($ex == 'png') {
 			$src = imagecreatefrompng($file);
 			$dst = imagecreatetruecolor($newWidth,$newHeight);
 			imagealphablending($dst, false);
