@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace Bhitti\Routing;
 
 use Bhitti\Core\Container;
-use Bhitti\Http\Middleware\Attributes\Middleware;
 use Bhitti\Http\Middleware\MiddlewareKernel;
 use Bhitti\Http\Response;
 use FastRoute\Dispatcher as FastRouteDispatcher;
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionNamedType;
 
 final class RouteDispatcher
 {
@@ -33,22 +29,22 @@ final class RouteDispatcher
                 return;
 
             case FastRouteDispatcher::FOUND:
-                $this->found($routeInfo[1], $routeInfo[2]);
+                $this->found($routeInfo[1], $routeInfo[2], $isApi);
                 return;
         }
     }
 
-    private function notFound(bool $isApi): void
+    private function notFound(bool $isApi, ?string $message = 'Not Found'): void
     {
         if ($isApi) {
             response()->json([
-                'error' => 'Not Found',
+                'error' => $message,
             ], 404)->send();
 
             return;
         }
 
-        response()->html('Not Found', 404)->send();
+        response()->html($message, 404)->send();
     }
 
     private function methodNotAllowed(array $allowedMethods, bool $isApi): void
@@ -66,103 +62,81 @@ final class RouteDispatcher
         response()->html('Method Not Allowed', 405)->header('Allow', $allow)->send();
     }
 
-    private function found(array $handler, array $vars): void
+    private function badRequest(bool $isApi, string $message): void
     {
+        if ($isApi) {
+            response()->json([
+                'error' => $message,
+            ], 400)->send();
 
-        $controllerClass = $handler[0];
-        $action = $handler[1];
-        $class = new ReflectionClass($controllerClass);
+            return;
+        }
 
-        $method = $class->getMethod($action);
+        response()->html($message, 400)->send();
+    }
 
-        $middlewares = array_merge(
-            $handler[2] ?? [],
-            $this->controllerMiddlewares($class, $method)
+    private function found(array $handler, array $vars, bool $isApi): void
+    {
+        $middlewareResponse = $this->middleware->handle(
+            $handler[2] ?? []
         );
-
-        $middlewareResponse = $this->middleware->handle($middlewares);
 
         if ($middlewareResponse instanceof Response) {
             $middlewareResponse->send();
+
             return;
         }
 
-        /*
-        * Controller is instantiated only after middleware passes.
-        */
-        $controller = $this->container->make($controllerClass);
+        $controller = $this->container->make($handler[0]);
+
         $arguments = $this->routeArguments(
-            $method,
+            $handler[3] ?? null,
             $vars
         );
-        $result = $controller->$action(...$arguments);
+
+        if ($arguments === null) {
+            $this->badRequest($isApi, 'Parameter Type Error');
+            return;
+        }
+
+        $result = $controller->{$handler[1]}(...$arguments);
 
         if ($result instanceof Response) {
             $result->send();
+
             return;
         }
 
-
-        /*
-         * Temporary support while view() directly renders output.
-         */
         if (is_string($result)) {
             echo $result;
         }
     }
 
-    private function controllerMiddlewares(ReflectionClass $class,  ReflectionMethod $method): array
-    {
-        $middlewares = [];
-
-        foreach (
-            $class->getAttributes(Middleware::class)
-            as $attribute
-        ) {
-            $definition = $attribute->newInstance();
-
-            $middlewares[] = $definition->arguments === []
-                ? $definition->class
-                : [$definition->class, $definition->arguments];
-        }
-
-        foreach (
-            $method->getAttributes(Middleware::class)
-            as $attribute
-        ) {
-            $definition = $attribute->newInstance();
-
-            $middlewares[] = $definition->arguments === []
-                ? $definition->class
-                : [$definition->class, $definition->arguments];
-        }
-
-        return $middlewares;
-    }
-
-    private function routeArguments(ReflectionMethod $method, array $vars): array
+    private function routeArguments(string|array|null $metadata, array $vars): ?array
     {
         $arguments = array_values($vars);
-        $parameters = $method->getParameters();
+
+        if ($metadata === null) {
+            return $arguments;
+        }
+
+        $types = (array) $metadata;
 
         foreach ($arguments as $index => $value) {
-            $parameter = $parameters[$index] ?? null;
+            $type = $types[$index] ?? null;
 
-            if ($parameter === null) {
-                break;
-            }
-
-            $type = $parameter->getType();
-
-            if (!$type instanceof ReflectionNamedType || !$type->isBuiltin()) {
-                continue;
-            }
-
-            $arguments[$index] = match ($type->getName()) {
-                'int' => $$integer = filter_var($value, FILTER_VALIDATE_INT),
+            $validated = match ($type) {
+                'int'   => filter_var($value, FILTER_VALIDATE_INT),
                 'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
+                'bool'  => filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE),
                 default => $value,
             };
+
+            if ($validated === false || $validated === null && $type === 'bool') {
+                return null;
+            }
+
+            $arguments[$index] = $validated;
         }
 
         return $arguments;

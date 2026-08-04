@@ -1,26 +1,36 @@
 <?php
 
-// Incomplete this file. we will fixed 
+declare(strict_types=1);
 
-// Command: php run cache:route
-// Caches FastRoute dispatcher for production performance
+use Bhitti\Routing\RouteCollector;
+use FastRoute\RouteCollector as FastRouteCollector;
+
+if (PHP_SAPI !== 'cli') {
+    exit('This command can only be run from the CLI.');
+}
+
 require dirname(__DIR__) . '/bootstrap/app.php';
 
 $cacheFile = STORAGE_PATH . '/cache/route.cache';
 
-// Clear existing cache
-if (file_exists($cacheFile)) {
-    unlink($cacheFile);
-    echo "[✓] Cleared existing route cache\n";
+if (is_file($cacheFile) && !unlink($cacheFile)) {
+    throw new RuntimeException(
+        "Unable to remove existing route cache: {$cacheFile}"
+    );
 }
 
-// Generate new cache by running dispatcher
-$dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $route) {
-    require_once ROOT_PATH . '/config/routes.php';
-}, [
-    'cacheFile' => $cacheFile,
-    'cacheDisabled' => false,  // Force cache generation
-]);
+\FastRoute\cachedDispatcher(
+    static function (FastRouteCollector $route): void {
+        require ROOT_PATH . '/config/routes.php';
+    },
+    [
+        'routeCollector' => RouteCollector::class,
+        'cacheFile' => $cacheFile,
+        'cacheDisabled' => false,
+    ]
+);
+
+clearstatcache(true, $cacheFile);
 
 if (file_exists($cacheFile)) {
     $fileSize = filesize($cacheFile);

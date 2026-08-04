@@ -6,20 +6,22 @@ namespace Bhitti\Routing;
 
 use Bhitti\Http\Request;
 use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use FastRoute\RouteCollector as FastRouteCollector;
 
 final class Router
 {
     private Dispatcher $dispatcher;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->dispatcher = \FastRoute\cachedDispatcher(
-            static function (RouteCollector $route): void {
+            static function (FastRouteCollector $route): void {
                 require ROOT_PATH . '/config/routes.php';
             },
             [
+                'routeCollector' => RouteCollector::class,
                 'cacheFile' => STORAGE_PATH . '/cache/route.cache',
-                'cacheDisabled' => config('app.debug'),
+                'cacheDisabled' => (bool) config('app.debug', false),
             ]
         );
     }
