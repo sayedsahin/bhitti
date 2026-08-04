@@ -6,7 +6,7 @@ return [
     'name' => (string) env('APP_NAME', 'Bhitti Framework'),
 
     // false = production
-    'debug' => (bool) env('DEBUG_MODE', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     'url' => rtrim((string) env('BASE_URL', 'http://localhost'), '/'),
     'timezone' => (string) env('APP_TIMEZONE', 'UTC'),

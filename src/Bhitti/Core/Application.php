@@ -98,9 +98,26 @@ final class Application
         $cacheFile = STORAGE_PATH. '/cache/config.cache';
 
         if (is_file($cacheFile)) {
-            Config::load(
-                ConfigLoader::loadFromCache($cacheFile)
-            );
+            $configItems = ConfigLoader::loadFromCache($cacheFile);
+            if ($configItems['app']['debug'] === true) {
+               $envFile = ROOT_PATH . '/.env';
+                if (is_file($envFile)) {
+                    $dotenv = new Dotenv();
+                    $dotenv->usePutenv();
+                    $dotenv->load($envFile);
+                }
+
+                $items = ConfigLoader::load(ROOT_PATH . '/config');
+                if ($items['app']['debug'] === false) {
+                    ConfigLoader::writeCache($cacheFile, $items);
+                } elseif (is_file($cacheFile)) {
+                    unlink($cacheFile);
+                }
+            }
+            // Config::load(
+            //     ConfigLoader::loadFromCache($cacheFile)
+            // );
+            Config::load($configItems);
         } else {
             $envFile = ROOT_PATH . '/.env';
 
@@ -119,8 +136,55 @@ final class Application
         }
 
         date_default_timezone_set(config('app.timezone', 'UTC'));
-        define('BASE_URL', config('app.url'));
+        // define('BASE_URL', config('app.url'));
 
+    }
+
+    private function loadConfigurations(): void
+    {
+        $cacheFile = STORAGE_PATH . '/cache/config.cache';
+        $items = null;
+
+        if (is_file($cacheFile)) {
+            $cachedItems = ConfigLoader::loadFromCache($cacheFile);
+
+            if ($cachedItems['app']['debug'] === false) {
+                $items = $cachedItems;
+            }
+        }
+
+        // if cache file is not exist
+        if ($items === null) {
+
+            // load .env if exist
+            $this->loadEnvironment();
+
+            $items = ConfigLoader::load(ROOT_PATH . '/config');
+
+            if ($items['app']['debug'] === false) {
+                ConfigLoader::writeCache($cacheFile, $items);
+            } elseif (is_file($cacheFile)) {
+                unlink($cacheFile);
+            }
+        }
+
+        Config::load($items);
+
+        date_default_timezone_set(config('app.timezone', 'UTC'));
+        define('BASE_URL', config('app.url'));
+    }
+
+    private function loadEnvironment(): void
+    {
+        $envFile = ROOT_PATH . '/.env';
+
+        if (!is_file($envFile)) {
+            return;
+        }
+
+        $dotenv = new Dotenv();
+        $dotenv->usePutenv();
+        $dotenv->load($envFile);
     }
 
     private function registerCoreServices(): void
