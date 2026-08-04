@@ -123,7 +123,7 @@ if (!function_exists('view')) {
 if (!function_exists('view_path')) {
     function view_path(string $view): string
     {
-        return APP_PATH . '/Views/' . str_replace('.', '/', $view) . '.php';
+        return ROOT_PATH . '/resources/views/' . str_replace('.', '/', $view) . '.view.php';
     }
 }
 
