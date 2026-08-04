@@ -46,10 +46,6 @@ final class ConfigLoader
 
     public static function loadFromCache(string $cacheFile): array
     {
-        if (!is_file($cacheFile)) {
-            throw new RuntimeException("Config cache file not found: {$cacheFile}");
-        }
-
         $items = require $cacheFile;
 
         if (!is_array($items)) {
