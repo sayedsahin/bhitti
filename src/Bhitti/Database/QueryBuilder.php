@@ -12,7 +12,7 @@ use PDO;
  *
  * Terminal methods execute the query and reset the current query state.
  */
-abstract class QueryBuilder
+class QueryBuilder
 {
     protected PDO $pdo;
     private string $driver;

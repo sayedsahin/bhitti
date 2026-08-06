@@ -11,6 +11,8 @@ final class ConfigLoader
 {
     private const IGNORED_FILES = [
         'routes.php',
+        'middleware.php',
+        'commands.php',
     ];
 
     public static function load(string $configPath): array

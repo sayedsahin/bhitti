@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Bhitti\Routing;
 
 use Bhitti\Http\Middleware\Attributes\Middleware;
+use Closure;
 use FastRoute\RouteCollector as FastRouteCollector;
+use LogicException;
 use ReflectionMethod;
 use ReflectionNamedType;
 
@@ -13,6 +15,11 @@ final class RouteCollector extends FastRouteCollector
 {
     public function addRoute($httpMethod, $route, $handler)
     {
+
+        if (is_string($handler)) {
+            $handler = [$handler, '__invoke'];
+        }
+
         parent::addRoute(
             $httpMethod,
             $route,
@@ -110,5 +117,11 @@ final class RouteCollector extends FastRouteCollector
         }
 
         return count($types) === 1 ? $types[0] : $types;
+    }
+
+    public function middleware(string $middleware): self
+    {
+        // 
+        return $this;
     }
 }

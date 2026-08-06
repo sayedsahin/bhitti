@@ -9,7 +9,6 @@ use Bhitti\Http\Request;
 use Bhitti\Http\Response;
 use Bhitti\Routing\RouteDispatcher;
 use Bhitti\Routing\Router;
-use Bhitti\Session\Session;
 use Bhitti\Session\SessionManager;
 
 final class Kernel
@@ -31,10 +30,10 @@ final class Kernel
             );
         }
 
-        $config = (array) config('middleware', []);
+        $middleware = require ROOT_PATH . '/config/middleware.php';
 
-        $this->middleware->web($config['web'] ?? []);
-        $this->middleware->api($config['api'] ?? []);
+        $this->middleware->web($middleware['web'] ?? []);
+        $this->middleware->api($middleware['api'] ?? []);
 
         $middlewareResponse = $this->middleware->handleGlobal($isApi);
 

@@ -3,69 +3,84 @@
 
 declare(strict_types=1);
 
+use Bhitti\Console\Application;
+use Bhitti\Console\CommandRegistry;
+use Bhitti\Core\Container;
+
 if (PHP_SAPI !== 'cli') {
     http_response_code(403);
     exit('This command can only be run from the CLI.');
 }
 
-$rootPath = __DIR__;
+$debug = false;
+$exitCode = 1;
 
-$commands = [
-    'cache:clear' => [
-        'description' => 'Clear application and generated caches.',
-        'script' => $rootPath . '/bin/cache-clear.php',
-    ],
+try {
+    $app = require __DIR__ . '/bootstrap/app.php';
+    $app->boot();
 
-    'cache:config' => [
-        'description' => 'Create the configuration cache.',
-        'script' => $rootPath . '/bin/cache-config.php',
-    ],
+    $debug = (bool) config('app.debug', false);
 
-    'cache:route' => [
-        'description' => 'Create the route cache.',
-        'script' => $rootPath . '/bin/cache-route.php',
-    ],
-];
-
-$argv = $_SERVER['argv'] ?? [];
-$command = $argv[1] ?? 'list';
-$arguments = array_slice($argv, 2);
-
-if (in_array($command, ['list', '--help', '-h'], true)) {
-    fwrite(STDOUT, "Bhitti Command Line\n\n");
-    fwrite(STDOUT, "Usage:\n");
-    fwrite(STDOUT, "  php Bhitti <command> [options]\n\n");
-    fwrite(STDOUT, "Available commands:\n");
-
-    $width = max(array_map('strlen', array_keys($commands)));
-
-    foreach ($commands as $name => $definition) {
-        fwrite(
-            STDOUT,
-            sprintf(
-                "  %-{$width}s  %s\n",
-                $name,
-                $definition['description']
-            )
+    if (!isset($container) || !$container instanceof Container) {
+        throw new RuntimeException(
+            'The application container is not available after bootstrap.'
         );
     }
 
-    exit(0);
+    $registry = new CommandRegistry();
+
+    $frameworkCommandFile = ROOT_PATH
+        . '/src/Bhitti/Console/commands.php';
+
+    $appCommandFile = ROOT_PATH . '/config/commands.php';
+
+    if (!is_file($frameworkCommandFile)) {
+        throw new RuntimeException(
+            "Framework command file not found: {$frameworkCommandFile}"
+        );
+    }
+
+    $frameworkCommands = require $frameworkCommandFile;
+
+    if (!is_array($frameworkCommands)) {
+        throw new RuntimeException(
+            "Framework command file must return an array: {$frameworkCommandFile}"
+        );
+    }
+
+    $applicationCommandFile = ROOT_PATH . '/config/commands.php';
+
+    $applicationCommands = is_file($applicationCommandFile)
+        ? require $applicationCommandFile
+        : [];
+
+    $registry->addMany($frameworkCommands);
+    $registry->addMany($applicationCommands);
+
+    $console = new Application(
+        $container,
+        $registry,
+        $debug
+    );
+
+    $exitCode = $console->run(
+        $_SERVER['argv'] ?? []
+    );
+} catch (Throwable $exception) {
+    fwrite(
+        STDERR,
+        'Console failed: '
+        . $exception->getMessage()
+        . PHP_EOL
+    );
+
+    if ($debug) {
+        fwrite(
+            STDERR,
+            $exception->getTraceAsString()
+            . PHP_EOL
+        );
+    }
 }
 
-if (!isset($commands[$command])) {
-    fwrite(STDERR, "Unknown command: {$command}\n\n");
-    fwrite(STDERR, "Run `php Bhitti list` to see available commands.\n");
-
-    exit(1);
-}
-
-$script = $commands[$command]['script'];
-
-if (!is_file($script)) {
-    fwrite(STDERR, "Command script does not exist: {$script}\n");
-
-    exit(1);
-}
-
-require $script;
+exit($exitCode);
