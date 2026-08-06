@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Bhitti\Routing;
 
 use Bhitti\Http\Middleware\Attributes\Middleware;
-use Closure;
 use FastRoute\RouteCollector as FastRouteCollector;
-use LogicException;
 use ReflectionMethod;
 use ReflectionNamedType;
 
