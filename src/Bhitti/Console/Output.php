@@ -23,6 +23,6 @@ final class Output
 
     public function warning(string $message): void
     {
-        $this->error("\033[0;33m⚠ {$message}\033[0m");
+        $this->line("\033[0;31m✕ {$message}\033[0m");
     }
 }
