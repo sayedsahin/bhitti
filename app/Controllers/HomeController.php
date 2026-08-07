@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Middlewares\RoleMiddleware;
 use App\Supports\Auth;
+use Bhitti\Database\Database;
+use Bhitti\Http\Middleware\Attributes\Middleware;
 
+// #[Middleware(RoleMiddleware::class, ['user'])]
 class HomeController extends Controller
 {
 	public function index()
@@ -29,9 +33,9 @@ class HomeController extends Controller
 	public function apiIndex()
 	{
 		$users = [];
-		if (Auth::check()) {
-			$users[] = Auth::user();
-		}
+		// if (Auth::check()) {
+		// 	$users[] = Auth::user();
+		// }
 
 		return response()->json([
 			'title' => 'Home',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Bhitti\Console\Application;
 use Bhitti\Console\CommandRegistry;
+use Bhitti\Console\FrameworkCommands;
 use Bhitti\Core\Container;
 
 if (PHP_SAPI !== 'cli') {
@@ -29,32 +30,13 @@ try {
 
     $registry = new CommandRegistry();
 
-    $frameworkCommandFile = ROOT_PATH
-        . '/src/Bhitti/Console/commands.php';
-
-    $appCommandFile = ROOT_PATH . '/config/commands.php';
-
-    if (!is_file($frameworkCommandFile)) {
-        throw new RuntimeException(
-            "Framework command file not found: {$frameworkCommandFile}"
-        );
-    }
-
-    $frameworkCommands = require $frameworkCommandFile;
-
-    if (!is_array($frameworkCommands)) {
-        throw new RuntimeException(
-            "Framework command file must return an array: {$frameworkCommandFile}"
-        );
-    }
-
     $applicationCommandFile = ROOT_PATH . '/config/commands.php';
 
     $applicationCommands = is_file($applicationCommandFile)
         ? require $applicationCommandFile
         : [];
 
-    $registry->addMany($frameworkCommands);
+    $registry->addMany(FrameworkCommands::all());
     $registry->addMany($applicationCommands);
 
     $console = new Application(

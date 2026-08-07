@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bca293f9aac696ca9a305089d0358a0a",
+    "content-hash": "5b13c72b20a001801736e6b4e44590cb",
     "packages": [
         {
             "name": "nikic/fast-route",
@@ -57,17 +57,59 @@
             "time": "2026-07-09T19:38:47+00:00"
         },
         {
-            "name": "symfony/dotenv",
-            "version": "v7.4.14",
+            "name": "sayedsahin/bhitti-framework",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/dotenv.git",
-                "reference": "9b9c7a00e565238857eea0040dc9745e3576402e"
+                "url": "https://github.com/sayedsahin/bhitti-framework.git",
+                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dotenv/zipball/9b9c7a00e565238857eea0040dc9745e3576402e",
-                "reference": "9b9c7a00e565238857eea0040dc9745e3576402e",
+                "url": "https://api.github.com/repos/sayedsahin/bhitti-framework/zipball/b350e4970ef3105515923fffc5a3ad4a15913bdc",
+                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-pdo": "*",
+                "nikic/fast-route": "^1.3",
+                "php": ">=8.3",
+                "symfony/dotenv": "^7.4"
+            },
+            "default-branch": true,
+            "type": "project",
+            "autoload": {
+                "files": [
+                    "src/Bhitti/Supports/helper.php"
+                ],
+                "psr-4": {
+                    "Bhitti\\": "src/Bhitti/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A lightweight, simple and performance-first PHP framework.",
+            "support": {
+                "issues": "https://github.com/sayedsahin/bhitti-framework/issues",
+                "source": "https://github.com/sayedsahin/bhitti-framework/tree/main"
+            },
+            "time": "2026-08-07T11:08:39+00:00"
+        },
+        {
+            "name": "symfony/dotenv",
+            "version": "v7.4.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dotenv.git",
+                "reference": "99b5b14953237c89ed24f1af5ba34225caf598a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/99b5b14953237c89ed24f1af5ba34225caf598a4",
+                "reference": "99b5b14953237c89ed24f1af5ba34225caf598a4",
                 "shasum": ""
             },
             "require": {
@@ -112,7 +154,7 @@
                 "environment"
             ],
             "support": {
-                "source": "https://github.com/symfony/dotenv/tree/v7.4.14"
+                "source": "https://github.com/symfony/dotenv/tree/v7.4.15"
             },
             "funding": [
                 {
@@ -132,20 +174,21 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:22:21+00:00"
+            "time": "2026-07-26T10:22:28+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "sayedsahin/bhitti-framework": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-mbstring": "*",
-        "ext-pdo": "*",
-        "ext-pdo_mysql": "*"
+        "ext-pdo": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

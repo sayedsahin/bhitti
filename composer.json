@@ -5,11 +5,9 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Bhitti\\": "src/Bhitti/",
             "App\\": "app/"
         },
         "files": [
-            "src/Bhitti/Supports/helper.php",
             "app/Helpers/common.php"
         ]
     },
@@ -18,6 +16,8 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "nikic/fast-route": "^1.3",
-        "symfony/dotenv": "^7.4"
+        "symfony/dotenv": "^7.4",
+        "sayedsahin/bhitti-framework": "dev-main"
+
     }
 }
