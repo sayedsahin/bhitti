@@ -21,12 +21,10 @@
 <body>
 
     <!-- Page Content -->
-    <?= $content ?>
+    <?= $this->section('content') ?>
 
     <!-- Optional Scripts -->
-    <?php if (!empty($scripts)): ?>
-        <?= raw($scripts) ?>
-    <?php endif; ?>
+    <?= $this->section('scripts') ?>
 
 </body>
 </html>

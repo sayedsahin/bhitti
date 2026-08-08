@@ -1,20 +1,19 @@
-<?php ob_start(); ?>
+<?php $this->layout('layout.main'); ?>
+<?php $this->start('content'); ?>
 
 <div style="font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 80vh; background-color: #f8fafc; color: #1e293b; padding: 20px;">
     <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); max-width: 400px; width: 100%;">
 
         <h2 style="font-size: 2rem; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: #0f172a; text-align: center;">
-            <?= e($title ?? 'Login') ?>
+            <?= $this->e($title ?? 'Login') ?>
         </h2>
 
-        <?php if (function_exists('flash')): ?>
-            <div style="margin-bottom: 20px;">
-                <?= flash(); ?>
-            </div>
-        <?php endif; ?>
+        <div style="margin-bottom: 20px;">
+            <?= $this->flash() ?>
+        </div>
 
         <form method="post" action="/login" style="display: flex; flex-direction: column; gap: 15px;">
-            <?= csrf_field() ?>
+            <?= $this->csrfField() ?>
 
             <div>
                 <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Email</label>
@@ -41,9 +40,9 @@
     </div>
 </div>
 
-<?php $content = ob_get_clean(); ?>
+<?php $this->end(); ?>
 
-<?php ob_start(); ?>
-<?php $scripts = ob_get_clean(); ?>
+<?php $this->start('scripts'); ?>
+<!-- Scripts -->
+<?php $this->end(); ?>
 
-<?php require view_path('layout.main'); ?>
