@@ -11,10 +11,6 @@ use Bhitti\Validation\Validator;
 
 class ApiAuthController extends Controller
 {
-    public function __construct()
-    {
-        // API routes use BearerAuth middleware from config/middleware.php
-    }
 
     public function login()
     {

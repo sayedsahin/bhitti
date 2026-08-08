@@ -1,58 +1,65 @@
 <?php ob_start(); ?>
 
-<h2><?= e($title) ?></h2>
-<?= flash(); ?>
-<form method="post" action="/register">
-    <?= csrf_field() ?>
-    <!-- name -->
-     <p>
-        <label>
-            Name
-        </label><br>
-            <input type="text" name="name" required>
-     </p>
-        <!-- username -->
-    <p>
-        <label>
-            Username
-        </label><br>
-            <input type="text" name="username" required>
-     </p>
-     <!-- email -->
-      <p>
-        <label>
-            Email
-        </label><br>
-            <input type="email" name="email" required>
-     </p>
-     <!-- password -->
-      <p>
-        <label>
-            Password
-        </label><br>
-            <input type="password" name="password" required>
-     </p>
-     <!-- confirm password -->
-      <p>
-        <label>
-            Confirm Password
-        </label><br>
-            <input type="password" name="password_confirmation" required>
-    </p>
-    <!-- agree to terms -->
-    <div>
-        <label>
-            Agree to Terms and Conditions
-        </label>
-            <input type="checkbox" name="agreed" required>
-    </div><br>
-    <button type="submit">Register</button>
-</form>
+<div style="font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 80vh; background-color: #f8fafc; color: #1e293b; padding: 20px;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); max-width: 500px; width: 100%;">
+
+        <h2 style="font-size: 2rem; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: #0f172a; text-align: center;">
+            <?= e($title ?? 'Register') ?>
+        </h2>
+
+        <?php if (function_exists('flash')): ?>
+            <div style="margin-bottom: 20px;">
+                <?= flash(); ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post" action="/register" style="display: flex; flex-direction: column; gap: 15px;">
+            <?= csrf_field() ?>
+
+            <div>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Name</label>
+                <input type="text" name="name" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Username</label>
+                <input type="text" name="username" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Email</label>
+                <input type="email" name="email" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Password</label>
+                    <input type="password" name="password" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 5px; color: #334155;">Confirm Password</label>
+                    <input type="password" name="password_confirmation" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; color: #0f172a; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <input type="checkbox" name="agreed" id="agreed" required style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="agreed" style="font-size: 0.875rem; color: #475569; cursor: pointer;">I agree to the Terms and Conditions</label>
+            </div>
+
+            <button type="submit" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 10px;">Register</button>
+
+            <p style="text-align: center; margin-top: 15px; font-size: 0.875rem; color: #64748b;">
+                Already have an account? <a href="/login" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Login</a>
+            </p>
+        </form>
+
+    </div>
+</div>
 
 <?php $content = ob_get_clean(); ?>
 
 <?php ob_start(); ?>
-<script></script>
 <?php $scripts = ob_get_clean(); ?>
 
 <?php require view_path('layout.main'); ?>

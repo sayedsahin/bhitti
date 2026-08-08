@@ -44,7 +44,7 @@ class AuthController extends Controller
 				->email('email')
 				->validated();
 
-			// ✅ validated() Return only validated fields
+			// ☑ validated() Return only validated fields
 			// $data['email']
 			// $data['password']
 
@@ -67,8 +67,6 @@ class AuthController extends Controller
 				->back();
 		}
 
-		// Session::regenerate();
-		// Session::set('auth_user_id', (int) $user->id);
 		Auth::login((int) $user->id);
 		$role = Role::userRoles($user->id);
 		if ($data['remember'] ?? false) {
