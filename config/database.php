@@ -49,7 +49,7 @@ return [
         'username' => env('REDIS_USERNAME', null),
         'password' => env('REDIS_PASSWORD', null),
 
-        'db' => (int) $redisDb ?? 0,
+        'db' => (int) ($redisDb ?? 0),
         'cache_db' => (int) env('REDIS_CACHE_DB',  $redisDb ?? 1),
         'rate_limit_db' => (int) env('REDIS_RATE_LIMIT_DB',  $redisDb ?? 2),
         'session_db' => (int) env('REDIS_SESSION_DB',  $redisDb ?? 3),

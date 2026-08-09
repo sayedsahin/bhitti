@@ -91,14 +91,12 @@ class AuthController extends Controller
 		return response()->redirect('/')->with(['success' => 'Login Successful']);
 	}
 
-	#[Middleware(Guest::class)]
 	public function registration()
 	{
 		return view('auth.register', ['title' => 'Register']);
 	}
 
 
-	#[Middleware(Guest::class)]
 	public function registrationProcess()
 	{
 
@@ -179,7 +177,6 @@ class AuthController extends Controller
 		return response()->redirect('/login');
 	}
 
-	#[Middleware(Guest::class)]
 	public function forgot()
 	{
 		return view('forgot_password');
