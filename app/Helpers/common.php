@@ -1,6 +1,7 @@
 <?php
 
 use App\Supports\Auth;
+use App\Supports\Flash;
 use App\Supports\Role;
 
 if (!function_exists('role')) {
@@ -23,5 +24,12 @@ if (!function_exists('auth')) {
         global $container;
 
         return $container->make(Auth::class);
+    }
+}
+
+if (!function_exists('flash')) {
+    function flash(): string
+    {
+        return Flash::render();
     }
 }

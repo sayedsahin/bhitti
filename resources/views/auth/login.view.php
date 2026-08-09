@@ -9,7 +9,7 @@
         </h2>
 
         <div style="margin-bottom: 20px;">
-            <?= $this->flash() ?>
+            <?= flash() ?>
         </div>
 
         <form method="post" action="/login" style="display: flex; flex-direction: column; gap: 15px;">
@@ -44,5 +44,6 @@
 
 <?php $this->start('scripts'); ?>
 <!-- Scripts -->
+ <h1>Login Page</h1>
 <?php $this->end(); ?>
 

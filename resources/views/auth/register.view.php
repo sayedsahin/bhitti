@@ -9,7 +9,7 @@
         </h2>
 
         <div style="margin-bottom: 20px;">
-            <?= $this->flash() ?>
+            <?= flash() ?>
         </div>
 
         <form method="post" action="/register" style="display: flex; flex-direction: column; gap: 15px;">
