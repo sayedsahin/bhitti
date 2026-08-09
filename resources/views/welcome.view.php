@@ -17,7 +17,10 @@
                 <span style="background: #e2e8f0; padding: 8px 16px; border-radius: 9999px; font-weight: 500;">
                     Welcome, <?= $this->e(\App\Supports\Auth::user()->name) ?> 👋
                 </span>
-                <a href="/logout" style="background: #ef4444; color: white; text-decoration: none; padding: 8px 16px; border-radius: 9999px; font-weight: 500;">Logout</a>
+                <form method="post" action="/logout" style="display: inline;">
+                    <?= $this->csrfField() ?>
+                    <button type="submit" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 9999px; font-weight: 500; cursor: pointer;">Logout</button>
+                </form>
             <?php else: ?>
                 <a href="/login" style="background: #3b82f6; color: white; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 600;">Login</a>
                 <a href="/register" style="background: #f1f5f9; color: #334155; text-decoration: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0;">Register</a>

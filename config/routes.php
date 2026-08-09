@@ -24,7 +24,7 @@ $route->get('/login', [AuthController::class, 'login', [Guest::class]]);
 $route->post('/login', [AuthController::class, 'loginProcess', [Guest::class]]);
 $route->get('/register', [AuthController::class, 'registration', [Guest::class]]);
 $route->post('/register', [AuthController::class, 'registrationProcess', [Guest::class]]);
-$route->get('/logout', [AuthController::class, 'logout', [Authenticated::class]]);
+$route->post('/logout', [AuthController::class, 'logout', [Authenticated::class]]);
 
 
 /*
