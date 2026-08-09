@@ -13,6 +13,11 @@ return [
             $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
         });
+
+        Schema::statement(
+            'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)',
+            [1, 1]
+        );
     },
 
     'down' => static function (): void {
