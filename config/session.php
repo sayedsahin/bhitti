@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 return [
+    'enabled' => (bool) env('SESSION_ENABLED', true),
     'driver' => (string) env('SESSION_DRIVER', 'native'),
 
     'name' => (string) env('SESSION_NAME', 'BHITTISESSID'),
@@ -20,6 +21,10 @@ return [
     | Used by Redis and Memcached session drivers.
     */
     'prefix' => (string) env('SESSION_PREFIX', 'bhitti:session:'),
+
+    'redis' => [
+        'connection' => (string) env('SESSION_REDIS_CONNECTION', 'default'),
+    ],
 
     'lock' => (bool) env('SESSION_LOCK', true),
     'lock_ttl' => (int) env('SESSION_LOCK_TTL', 10),

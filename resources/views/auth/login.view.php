@@ -44,6 +44,5 @@
 
 <?php $this->start('scripts'); ?>
 <!-- Scripts -->
- <h1>Login Page</h1>
 <?php $this->end(); ?>
 

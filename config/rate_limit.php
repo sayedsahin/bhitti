@@ -14,6 +14,10 @@ return [
     'driver' => (string) env('RATE_LIMIT_STORE', 'file'),
     'prefix' => (string) env('RATE_LIMIT_PREFIX', 'bhitti:rate-limit:'),
 
+    'redis' => [
+        'connection' => (string) env('RATE_LIMIT_REDIS_CONNECTION', 'default'),
+    ],
+
     'web' => [
         'guest' => [
             'max_attempts' => 120,

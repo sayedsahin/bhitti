@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b13c72b20a001801736e6b4e44590cb",
+    "content-hash": "07ad0c96cc85592e4df0415ece1d977a",
     "packages": [
         {
             "name": "nikic/fast-route",
@@ -59,16 +59,10 @@
         {
             "name": "sayedsahin/bhitti-framework",
             "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sayedsahin/bhitti-framework.git",
-                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sayedsahin/bhitti-framework/zipball/b350e4970ef3105515923fffc5a3ad4a15913bdc",
-                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc",
-                "shasum": ""
+                "type": "path",
+                "url": "../bhitti-framework",
+                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -77,26 +71,23 @@
                 "php": ">=8.3",
                 "symfony/dotenv": "^7.4"
             },
-            "default-branch": true,
             "type": "project",
             "autoload": {
-                "files": [
-                    "src/Bhitti/Supports/helper.php"
-                ],
                 "psr-4": {
                     "Bhitti\\": "src/Bhitti/"
-                }
+                },
+                "files": [
+                    "src/Bhitti/Supports/helper.php"
+                ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "A lightweight, simple and performance-first PHP framework.",
-            "support": {
-                "issues": "https://github.com/sayedsahin/bhitti-framework/issues",
-                "source": "https://github.com/sayedsahin/bhitti-framework/tree/main"
-            },
-            "time": "2026-08-07T11:08:39+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "symfony/dotenv",
