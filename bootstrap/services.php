@@ -16,7 +16,7 @@ return static function (Application $app): void {
     //         ->select('id', 'name', 'email', 'username')
     //         ->find($id);
     // });
-
+    // Alternative
     (new AuthResolver)->handle();
 
     /*

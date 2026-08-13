@@ -12,4 +12,4 @@ define('STORAGE_PATH', ROOT_PATH . '/storage');
 
 require ROOT_PATH . '/vendor/autoload.php';
 
-return new Application(ROOT_PATH);
+return new Application();
