@@ -11,7 +11,7 @@ return [
             $table->id();
             $table->string('name')->nullable();
             $table->string('username')->nullable()->unique();
-            $table->string('email')->unique()->unique();
+            $table->string('email')->unique();
             $table->string('password')->nullable();
             $table->string('verification_token')->nullable();
             $table->tinyInteger('email_verified')->default(0);
@@ -19,11 +19,6 @@ return [
             $table->dateTime('reset_expires')->nullable();
             $table->timestamps();
         });
-
-        Schema::statement(
-            'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)',
-            ['admin', 'admin', 'admin@example.com', '$2a$12$XCLFNvnBKSbd8GOCeY6msOcjOpimvLHQ0btSOYKM5wT54BjsVliEO']
-        );
     },
 
     'down' => static function (): void {

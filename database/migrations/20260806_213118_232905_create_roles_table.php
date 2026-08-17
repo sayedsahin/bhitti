@@ -12,11 +12,6 @@ return [
             $table->string('name', 255)->unique();
             $table->timestamps();
         });
-
-        Schema::statement(
-            'INSERT INTO roles (name) VALUES (?), (?)',
-            ['admin', 'user']
-        );
     },
 
     'down' => static function (): void {
