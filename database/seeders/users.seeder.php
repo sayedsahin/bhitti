@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 return static function (): void {
-    $user = db()->table('users')->where('username', 'admin')->exists();
+    $user = db()->table('users')->where('username', 'user')->exists();
 
     if ($user === true) {
         return;
     }
 
     $userId = db()->table('users')->insert([
-            'email' => 'admin@example.com',
-            'name' => 'admin',
-            'username' => 'admin',
+            'email' => 'user@example.com',
+            'name' => 'user',
+            'username' => 'user',
             'password' => password_hash('password', PASSWORD_DEFAULT),
     ], true);
 

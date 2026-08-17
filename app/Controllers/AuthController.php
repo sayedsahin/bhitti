@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Middlewares\Authenticated;
-use App\Middlewares\Guest;
 use App\Supports\Auth;
 use App\Supports\Role;
-use Bhitti\Http\Middleware\Attributes\Middleware;
 use Bhitti\Session\Cookie;
 use Bhitti\Session\RememberToken;
 use Bhitti\Validation\ValidationException;
