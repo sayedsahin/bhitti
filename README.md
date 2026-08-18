@@ -1,57 +1,61 @@
 # Bhitti
 
-**Bhitti** is a lightweight PHP framework built around three core principles: **Performance**, **Simplicity** and **Efficiency**.
+**Bhitti** is a lightweight, performance-first PHP framework built around three priorities: **Performance**, **Simplicity**, and **Efficiency**.
+
+Bhitti is designed for modern PHP applications running with PHP-FPM while keeping the application layer small, explicit, and easy to understand. The framework provides routing, middleware, database access, migrations, sessions, cache, rate limiting, validation, authentication helpers, and a lightweight service container without introducing a large full-stack architecture.
+
+> This repository contains the **Bhitti starter application**. Framework core code lives in [`sayedsahin/bhitti-framework`](https://github.com/sayedsahin/bhitti-framework), and full developer documentation lives in [`sayedsahin/bhitti-doc`](https://github.com/sayedsahin/bhitti-doc).
 
 ## Requirements
 
-- PHP 8.2 or newer
+- PHP **8.3 or newer**
 - Composer
 - PDO
-- PDO MySQL
 - Mbstring
+- A PDO driver for the database you use (`pdo_mysql`, `pdo_pgsql`, or `pdo_sqlite`)
 
 Optional extensions:
 
+- PhpRedis for Redis cache, sessions, and rate limiting
+- Memcached for Memcached cache, sessions, and rate limiting
 - APCu for APCu cache and rate limiting
-- PhpRedis for Redis cache and rate limiting
-- Memcached for Memcached cache and rate limiting
-- GD for image resizing
+- GD when application image utilities require it
 
 ## Installation
 
-Clone or download the project, then install Composer dependencies:
+The Bhitti application installs the framework through Composer. The application package requires:
 
-```bash
-composer install
+```json
+{
+    "require": {
+        "php": ">=8.3",
+        "sayedsahin/bhitti-framework": "^0.2"
+    }
+}
 ```
 
-Create the environment file:
+For a normal application or production deployment, clone only the Bhitti application and install its Composer dependencies:
 
 ```bash
+git clone https://github.com/sayedsahin/bhitti.git
+cd bhitti
+composer install
 cp .env.example .env
 ```
 
-For Windows PowerShell:
+Composer installs `sayedsahin/bhitti-framework` as the framework dependency. A separate local framework checkout is not required for normal application development or production deployment.
+
+Windows PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Generate the optimized Composer autoloader when needed:
-
-```bash
-composer dump-autoload
-```
-
-## Environment Configuration
-
-Configure the application in `.env`:
+Configure `.env`:
 
 ```dotenv
-APP_NAME=Bhitti
-DEBUG_MODE=true
+APP_DEBUG=true
 BASE_URL=http://127.0.0.1:8000
-APP_TIMEZONE=UTC
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -60,27 +64,29 @@ DB_NAME=bhitti
 DB_USERNAME=root
 DB_PASSWORD=
 
+SESSION_ENABLED=true
 SESSION_DRIVER=native
 SESSION_LIFETIME=7200
-SESSION_SAMESITE=Lax
-SESSION_SECURE=false
 
 CACHE_DRIVER=file
-CACHE_PREFIX=bhitti:cache:
-
 RATE_LIMIT_STORE=file
-RATE_LIMIT_PREFIX=bhitti:rate-limit:
 ```
 
-After changing `.env` or a cached configuration file, rebuild the configuration cache:
+Run migrations:
 
 ```bash
-php run cache:config
+php run migrate
 ```
 
-## Development Server
+Optional development seed data:
 
-Run the PHP development server from the project root:
+```bash
+php run db:seed
+```
+
+Review the seed files in `database/seeders/` before running them outside development.
+
+Start the local development server:
 
 ```bash
 php -S 127.0.0.1:8000 -t public
@@ -92,145 +98,64 @@ Open:
 http://127.0.0.1:8000
 ```
 
-The PHP development server is intended for local development only.
+## Request Lifecycle
 
-## Your First Page
-
-A basic page requires three files:
+Bhitti keeps early request processing small and defers session-aware work until a route is found:
 
 ```text
-config/routes.php
-app/Controllers/HomeController.php
-app/Views/home.php
+Request
+  ↓
+Kernel middleware (stateless)
+  ↓
+Route matching
+  ├─ 404 / 405 → Response
+  └─ FOUND
+       ↓
+     Web session configuration
+       ↓
+     Route-level global middleware
+       ↓
+     Route-specific middleware
+       ↓
+     Controller class middleware attributes
+       ↓
+     Controller method middleware attributes
+       ↓
+     Controller
+       ↓
+     Response
 ```
 
-### Route
-
-Add the route to `config/routes.php`:
-
-```php
-<?php
-
-use App\Controllers\HomeController;
-
-$route->get('/', [HomeController::class, 'index']);
-```
-
-### Controller
-
-Create `app/Controllers/HomeController.php`:
-
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace App\Controllers;
-
-final class HomeController extends Controller
-{
-    public function index(): void
-    {
-        view('home', [
-            'title' => 'Bhitti',
-            'heading' => 'Welcome to Bhitti',
-            'description' => 'A lightweight PHP framework for super-fast, simple and efficient web applications.',
-        ]);
-    }
-}
-```
-
-### View
-
-Create `app/Views/home.php`:
-
-```php
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($title) ?></title>
-</head>
-<body>
-    <main>
-        <h1><?= e($heading) ?></h1>
-
-        <p><?= e($description) ?></p>
-    </main>
-</body>
-</html>
-```
-
-The request flow becomes:
-
-```text
-GET /
-→ HomeController::index()
-→ view('home', $data)
-→ app/Views/home.php
-```
+Kernel middleware should remain stateless. Session-dependent middleware belongs to the route level.
 
 ## Routing
 
 Routes are defined in `config/routes.php`.
 
-### Basic Routes
-
 ```php
+use App\Controllers\UserController;
+use App\Middlewares\Authenticated;
+
 $route->get('/users', [UserController::class, 'index']);
-$route->post('/users', [UserController::class, 'store']);
+
+$route->get('/users/{id:\\d+}', [
+    UserController::class,
+    'show',
+    [Authenticated::class],
+]);
 ```
 
-### Route Parameters
+API routes can be grouped normally:
 
 ```php
-$route->get('/users/{id:\d+}', [UserController::class, 'show']);
-```
-
-Controller:
-
-```php
-public function show(string $id): Response
-{
-    $user = User::query()->find((int) $id);
-
-    return response()->json([
-        'user' => $user,
-    ]);
-}
-```
-
-### Route Middleware
-
-```php
-$route->get('/dashboard', [DashboardController::class, 'index', [
-    Authenticated::class,
-]]);
-```
-
-Parameterized middleware:
-
-```php
-$route->get('/admin', [AdminController::class, 'index', [
-    Authenticated::class,
-    [RoleMiddleware::class, ['admin']],
-]]);
-```
-
-### API Routes
-
-Routes beginning with `/api` use the API middleware stack:
-
-```php
-$route->get('/api/profile', [ProfileController::class, 'show', [
-    BearerAuth::class,
-]]);
+$route->addGroup('/api', function () use ($route) {
+    $route->get('/users', [UserController::class, 'apiIndex']);
+});
 ```
 
 ## Controllers
 
-Controllers are resolved through the service container.
+Controllers live in `app/Controllers/` and are resolved through the service container after middleware succeeds.
 
 ```php
 <?php
@@ -239,632 +164,266 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Bhitti\Http\Response;
-
 final class UserController extends Controller
 {
-    public function index(): Response
+    public function index(): string
     {
         $users = db()
             ->table('users')
             ->select('id', 'name', 'email')
             ->get();
 
-        return response()->json([
+        return view('users.index', [
             'users' => $users,
         ]);
     }
 }
 ```
 
-Constructor dependencies are resolved automatically:
+Concrete constructor dependencies are autowired by the container.
+
+## Controller Middleware Attributes
+
+Bhitti supports repeatable PHP middleware attributes on controller classes and methods.
 
 ```php
-final class ReportController extends Controller
+use App\Middlewares\RoleMiddleware;
+use Bhitti\Http\Middleware\Attributes\Middleware;
+
+#[Middleware(RoleMiddleware::class, ['user'])]
+final class ProfileController extends Controller
 {
-    public function __construct(private ReportService $reports)
-    {
-    }
+    // Every routed action receives RoleMiddleware.
 }
 ```
+
+Method-level middleware applies only to that action:
+
+```php
+use App\Middlewares\Guest;
+use Bhitti\Http\Middleware\Attributes\Middleware;
+
+#[Middleware(Guest::class)]
+public function registrationProcess()
+{
+    // ...
+}
+```
+
+Attributes are repeatable:
+
+```php
+#[Middleware(Authenticated::class)]
+#[Middleware(RoleMiddleware::class, ['admin'])]
+public function dashboard(): string
+{
+    return view('admin.dashboard');
+}
+```
+
+Controller middleware metadata is collected during route registration and stored with the prepared route handler. After changing controller middleware attributes, rebuild the route cache:
+
+```bash
+php run route:cache
+```
+
+## Middleware Configuration
+
+Global middleware is separated into kernel-level and route-level stacks in `config/middleware.php`:
+
+```php
+return [
+    'kernel' => [
+        'web' => [WebHeaders::class],
+        'api' => [ApiHeaders::class],
+    ],
+
+    'route' => [
+        'web' => [
+            RateLimit::class,
+            RememberMe::class,
+            Csrf::class,
+        ],
+        'api' => [
+            RateLimit::class,
+        ],
+    ],
+];
+```
+
+Middleware returns `null` to continue or a `Response` to stop the request.
 
 ## Views
 
 Views are plain PHP files stored in:
 
 ```text
-app/Views/
+resources/views/
 ```
 
-Render a view:
+Bhitti uses the `.view.php` extension.
 
 ```php
-view('users.index', [
-    'title' => 'Users',
-    'users' => $users,
+return view('auth.login', [
+    'title' => 'Login',
 ]);
 ```
 
 This loads:
 
 ```text
-app/Views/users/index.php
+resources/views/auth/login.view.php
 ```
 
-Always escape dynamic output:
+`view()` returns the rendered string, so controllers should normally return it.
 
-```php
-<h1><?= e($title) ?></h1>
-```
+Layouts and sections are supported by the view layer. Escape dynamic output with `e()` and keep raw HTML developer-controlled.
 
-Use `raw()` only for trusted HTML:
+## Database and Query Builder
 
-```php
-<?= raw($trustedHtml) ?>
-```
+Bhitti uses PDO and supports named MySQL, PostgreSQL, and SQLite connections.
 
-### View Loop
-
-```php
-<?php if ($users === []): ?>
-    <p>No users found.</p>
-<?php else: ?>
-    <ul>
-        <?php foreach ($users as $user): ?>
-            <li>
-                <?= e($user->name) ?>
-                &lt;<?= e($user->email) ?>&gt;
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
-```
-
-### CSRF-Protected Form
-
-```php
-<form method="post" action="/users">
-    <?= csrf_field() ?>
-
-    <label for="name">Name</label>
-    <input id="name" name="name" type="text">
-
-    <button type="submit">Create User</button>
-</form>
-```
-
-## Request
-
-Use the request helper:
-
-```php
-$request = request();
-```
-
-### Form and Query Input
-
-```php
-$all = request()->all();
-$email = request()->input('email');
-$page = request()->query('page', 1);
-$name = request()->post('name');
-```
-
-### JSON Input
-
-```php
-$data = request()->json();
-$email = request()->json('email');
-```
-
-### Raw Body
-
-```php
-$body = request()->getRawBody();
-```
-
-### Files, Cookies and Headers
-
-```php
-$file = request()->file('avatar');
-$theme = request()->cookie('theme', 'light');
-$accept = request()->header('accept');
-$token = request()->bearerToken();
-```
-
-### Request Metadata
-
-```php
-$method = request()->method();
-$path = request()->path();
-$url = request()->fullUrl();
-$host = request()->host();
-$ip = request()->ip();
-$secure = request()->isSecure();
-```
-
-## Responses
-
-### HTML Response
-
-```php
-return response()->html('<h1>Hello</h1>');
-```
-
-### JSON Response
-
-```php
-return response()->json([
-    'status' => 'success',
-    'data' => $data,
-], 200);
-```
-
-### Headers and Status
-
-```php
-return response()
-    ->status(201)
-    ->header('X-App-Version', '1.0')
-    ->json([
-        'message' => 'Created',
-    ], 201);
-```
-
-### Redirect
-
-```php
-return response()->redirect('/dashboard');
-```
-
-Redirect with flash data:
-
-```php
-return response()
-    ->redirect('/login')
-    ->with('success', 'Registration completed successfully.');
-```
-
-Back redirect:
-
-```php
-return response()
-    ->redirect()
-    ->with('error', 'Invalid input.')
-    ->back();
-```
-
-## Middleware
-
-Middleware returns `null` to continue or a `Response` to stop the request.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace App\Middlewares;
-
-use Bhitti\Http\Middleware\MiddlewareInterface;
-use Bhitti\Http\Response;
-
-final class VerifiedEmail implements MiddlewareInterface
-{
-    public function handle(): ?Response
-    {
-        $user = \App\Supports\Auth::user();
-
-        if (!$user || !$user->email_verified) {
-            return response()->html(
-                'Email verification required.',
-                403
-            );
-        }
-
-        return null;
-    }
-}
-```
-
-Global middleware stacks are configured in `config/middleware.php`:
-
-```php
-return [
-    'web' => [
-        WebHeaders::class,
-        SessionStart::class,
-        RateLimit::class,
-        RememberMe::class,
-        Csrf::class,
-    ],
-
-    'api' => [
-        ApiHeaders::class,
-        RateLimit::class,
-    ],
-];
-```
-
-## Validation
-
-Create a validator:
-
-```php
-use Bhitti\Validation\Validator;
-
-$validator = Validator::make(request()->all())
-    ->required(['name', 'email'])
-    ->string(['name', 'email'])
-    ->email('email')
-    ->max('name', 100);
-```
-
-Check errors:
-
-```php
-if ($validator->fails()) {
-    return response()->json([
-        'errors' => $validator->errors(),
-    ], 422);
-}
-```
-
-Get only validated fields:
-
-```php
-$data = $validator->validated();
-```
-
-Additional rules include:
-
-```php
-->nullable('phone')
-->int('age')
-->bool('active')
-->min('password', 8)
-->max('name', 100)
-->in('status', ['active', 'inactive'])
-->confirmed('password')
-->sometimes('company_name', $callback)
-->custom($callback)
-->bail()
-```
-
-## Database
-
-Bhittiuses PDO for database access.
+### `db()` helper
 
 ```php
 $users = db()
     ->table('users')
-    ->select('id', 'name', 'email')
     ->where('status', 'active')
-    ->order('created_at DESC')
+    ->order('id DESC')
     ->limit(20)
     ->get();
 ```
 
-The database connection is reused during the request, while each `db()` call returns fresh Query Builder state.
-
-## Models
-
-Models are lightweight Query Builder subclasses:
+Named connection:
 
 ```php
-<?php
+$users = db('pgsql')
+    ->table('users')
+    ->get();
+```
 
-declare(strict_types=1);
+### Global `DB::query()` model
 
-namespace App\Models;
+```php
+use Bhitti\Database\DB;
 
+$users = DB::query()
+    ->table('users')
+    ->select('id', 'name', 'email')
+    ->get();
+```
+
+Use another configured connection when needed:
+
+```php
+$users = DB::query('sqlite')
+    ->table('users')
+    ->get();
+```
+
+### Application models
+
+Application models are lightweight `QueryBuilder` subclasses:
+
+```php
 use Bhitti\Database\QueryBuilder;
 
 final class User extends QueryBuilder
 {
-    protected string $table = 'users';
+    protected string $defaultTable = 'users';
+    protected array $defaultSelect = ['id', 'name', 'email'];
 }
 ```
-
-Use a fresh model query:
 
 ```php
 $users = User::query()
-    ->select('id', 'name', 'email')
     ->where('status', 'active')
     ->get();
 ```
 
-Bhitti models do not provide a full Active Record lifecycle, dirty tracking or automatic relationships.
+Query Builder values are bound through PDO. Normal table/column/operator APIs validate identifiers and supported grammar. Use `selectRaw()` or `raw()` only for developer-controlled SQL expressions.
 
-They provide a fixed table, reusable query methods and clean Query Builder access.
+Builder-generated `UPDATE` and `DELETE` operations require a `WHERE` condition.
 
-## Query Builder
+## Migrations
 
-### Conditions
+Create a table migration:
 
-```php
-$user = db()
-    ->table('users')
-    ->where('email', $email)
-    ->first();
+```bash
+php run migrate:create users
 ```
 
-```php
-// With database connection
-$users = db('sqlite')
-    ->table('users')
-    ->where('status', 'active')
-    ->orWhere('role', 'admin')
-    ->get();
+Create an alteration migration:
+
+```bash
+php run migrate:alter users
 ```
 
-```php
-$users = db()
-    ->table('users')
-    ->whereNull('deleted_at')
-    ->whereNotNull('email_verified_at')
-    ->like('name', '%John%')
-    ->get();
+Run migrations:
+
+```bash
+php run migrate
 ```
 
-### Joins
+Rollback:
 
-```php
-$users = db()
-    ->table('users')
-    ->leftJoin(
-        'profiles',
-        'profiles.user_id',
-        '=',
-        'users.id'
-    )
-    ->select('users.id', 'users.name', 'profiles.bio')
-    ->get();
+```bash
+php run migrate:rollback
+php run migrate:rollback --step=2
 ```
 
-### Read Methods
+Status:
 
-```php
-->get();
-->first();
-->find(5);
-->exists();
-->count();
-->pluck('email');
-->value('email');
+```bash
+php run migrate:status
 ```
 
-### Insert
+Migration records store the migration name, batch, and execution time. Bhitti does not use migration file checksums.
 
-```php
-$id = db()
-    ->table('users')
-    ->insert([
-        'name' => 'Rahim',
-        'email' => 'rahim@example.com',
-    ], true);
+## Database Seeders
+
+Create and automatically register a seeder:
+
+```bash
+php run create:seeder users
 ```
 
-### Update
+Run active seeders from `database/seeders/database.seeder.php`:
 
-```php
-db()
-    ->table('users')
-    ->where('id', 5)
-    ->update([
-        'status' => 'active',
-    ]);
+```bash
+php run db:seed
 ```
 
-### Delete
+Run a single seeder:
 
-```php
-db()
-    ->table('users')
-    ->where('id', 5)
-    ->delete();
+```bash
+php run db:seed --filename=users
 ```
 
-Builder-generated UPDATE and DELETE queries require a WHERE condition.
+Seeders are plain PHP files returning closures and execute in registry order.
 
-### Update or Insert
-
-```php
-db()
-    ->table('settings')
-    ->updateOrInsert(
-        ['key' => 'theme'],
-        ['value' => 'dark']
-    );
-```
-
-### Raw SQL
-
-Raw SELECT:
-
-```php
-$users = db()
-    ->raw(
-        'SELECT * FROM users WHERE status = ?',
-        ['active']
-    )
-    ->get();
-```
-
-Raw UPDATE:
-
-```php
-db()
-    ->raw(
-        'UPDATE users SET status = ? WHERE id = ?',
-        ['active', 5]
-    )
-    ->execute();
-```
-
-Raw INSERT with inserted ID:
-
-```php
-$id = db()
-    ->raw(
-        'INSERT INTO users (name, email) VALUES (?, ?)',
-        ['Rahim', 'rahim@example.com']
-    )
-    ->execute(true);
-```
-
-Values are bound through PDO.
-
-Table names, column names, operators, order expressions, joins and raw SQL must remain developer-controlled.
-
-## Authentication
-
-### Login
-
-```php
-use App\Supports\Auth;
-
-Auth::login((int) $user->id);
-```
-
-### Authentication State
-
-```php
-Auth::check();
-Auth::id();
-Auth::user();
-```
-
-### Logout
-
-```php
-Auth::logout();
-```
-
-### Route Protection
-
-```php
-$route->get('/dashboard', [DashboardController::class, 'index', [
-    Authenticated::class,
-]]);
-```
-
-### Bearer Authentication
-
-```php
-$route->get('/api/profile', [ProfileController::class, 'show', [
-    BearerAuth::class,
-]]);
-```
-
-Client request:
-
-```http
-Authorization: Bearer RAW_TOKEN
-```
-
-Raw authentication tokens are sent to the client while their SHA-256 hashes are stored in the database.
-
-## Roles
-
-Check a role:
-
-```php
-if (Role::has('admin')) {
-    // ...
-}
-```
-
-Check any role:
-
-```php
-Role::any(['admin', 'editor']);
-```
-
-Check all roles:
-
-```php
-Role::all(['admin', 'verified']);
-```
-
-Assign or remove roles:
-
-```php
-Role::assign($userId, 'user');
-Role::remove($userId, 'user');
-```
-
-Role results are cached for the current request.
-
-## Sessions
-
-```php
-use Bhitti\Session\Session;
-
-Session::set('key', $value);
-
-$value = Session::get('key', $default);
-
-Session::forget('key');
-Session::regenerate();
-Session::flush();
-Session::destroy();
-Session::close();
-```
+## Sessions, Cache, and Rate Limiting
 
 Available session drivers:
 
 ```text
 native
+redis
+memcached
 null
-```
-
-Web requests initialize sessions according to configuration. API requests remain session-free by default.
-
-## Cache
-
-```php
-cache()->put('user:5', $user, 300);
-
-$user = cache()->get('user:5');
-
-cache()->forget('user:5');
-```
-
-Remember a value:
-
-```php
-$user = cache()->remember(
-    'user:' . $id,
-    300,
-    function () use ($id) {
-        return User::query()->find($id);
-    }
-);
 ```
 
 Available cache drivers:
 
-| Driver | Recommended Use |
-|---|---|
-| Array | Tests and request-local temporary cache |
-| File | Portable single-server applications |
-| APCu | Supported single-server web environments |
-| Redis | Shared cache across servers, containers and CLI |
-| Memcached | Shared distributed cache |
+```text
+array
+file
+apcu
+redis
+memcached
+```
 
-Only the configured cache driver is initialized.
-
-## Rate Limiting
-
-Rate limiting is available for:
-
-- guest web requests
-- authenticated web requests
-- API requests
-- sensitive routes such as login and registration
-
-Available drivers:
+Available rate-limit stores:
 
 ```text
 file
@@ -873,287 +432,137 @@ redis
 memcached
 ```
 
-Direct usage:
+Redis connections are configured as named profiles under `config/database.php`. Cache, session, and rate limiting can share the same profile or use separate profiles when isolation is required.
+
+Memcached connection setup is also centralized under `config/database.php`.
+
+## Trusted Proxies
+
+Trusted proxies are disabled unless configured.
+
+Exact IPv4/IPv6 addresses and IPv4/IPv6 CIDR ranges are supported:
+
+```dotenv
+TRUSTED_PROXIES=127.0.0.1,10.0.0.0/8,172.16.0.0/12
+```
+
+Forwarded headers are trusted only when the direct proxy address is configured as trusted.
+
+## Redirects
+
+Normal redirects are intended for local application URLs:
 
 ```php
-$result = RateLimiter::hit(
-    'login:ip:' . request()->ip(),
-    5,
-    60
-);
-
-if (!$result->allowed()) {
-    return response()->json([
-        'error' => 'Too many attempts.',
-        'retry_after' => $result->retryAfter(),
-    ], 429);
-}
+return response()->redirect()->to('/dashboard');
 ```
 
-Rate-limit responses may include:
-
-```text
-X-RateLimit-Limit
-X-RateLimit-Remaining
-X-RateLimit-Reset
-Retry-After
-```
-
-## Service Container
-
-Configure bindings in `config/container.php`:
+Use `away()` explicitly for an external URL:
 
 ```php
-return [
-    'singletons' => [
-        \Bhitti\Database\Database::class,
-    ],
-
-    'bindings' => [],
-];
-```
-
-Interface binding:
-
-```php
-'bindings' => [
-    LoggerInterface::class => FileLogger::class,
-],
-```
-
-Use singletons only for services that should reuse one instance during a request.
-
-Stateful objects such as Query Builder and Response should not be registered as singletons.
-
-## Exception Handling
-
-Bhitti registers a central handler for:
-
-- uncaught exceptions
-- PHP errors
-- fatal shutdown errors
-- web error responses
-- API JSON error responses
-- CLI error output
-
-With debug mode disabled:
-
-```json
-{
-    "error": "Internal Server Error"
-}
-```
-
-With debug mode enabled, development responses include exception details and stack traces.
-
-Never enable debug output on a public production server.
-
-## Configuration
-
-Read configuration:
-
-```php
-$name = config('app.name');
-$debug = config('app.debug', false);
-```
-
-Set request-local configuration:
-
-```php
-config([
-    'app.debug' => true,
-]);
-```
-
-Read environment values inside config files:
-
-```php
-'host' => env('DB_HOST', '127.0.0.1'),
-```
-
-Configuration is cached in:
-
-```text
-storage/cache/config.cache.php
+return response()->redirect()->away('https://example.com');
 ```
 
 ## Command-Line Tools
 
-Rebuild configuration cache:
+Bhitti's CLI entry point is the root `run` script:
 
 ```bash
-php run cache:config
+php run
 ```
 
-Rebuild route cache:
+Main framework commands:
 
 ```bash
-php run cache:route
-```
+php run migrate:create users
+php run migrate:alter users
+php run migrate
+php run migrate:rollback
+php run migrate:status
 
-Clear application cache:
+php run create:seeder users
+php run db:seed
+php run db:seed --filename=users
 
-```bash
+php run config:cache
+php run route:cache
 php run cache:clear
 ```
 
-Generate optimized Composer autoload files:
-
-```bash
-composer dump-autoload --optimize
-```
+Application-specific commands can be registered in `config/commands.php`.
 
 ## Directory Structure
 
 ```text
-pkathamo/
+bhitti/
 ├── app/
 │   ├── Controllers/
 │   ├── Helpers/
 │   ├── Middlewares/
 │   ├── Models/
-│   ├── Supports/
-│   ├── Systems/
-│   ├── Validation/
-│   └── Views/
-├── bin/
+│   └── Supports/
 ├── bootstrap/
+│   ├── app.php
+│   └── services.php
 ├── config/
 ├── database/
-├── docs/
+│   ├── migrations/
+│   └── seeders/
 ├── public/
+│   ├── assets/
+│   └── index.php
+├── resources/
+│   └── views/
 ├── storage/
-├── tests/
+│   └── cache/
 ├── .env.example
 ├── composer.json
-└── README.md
+└── run
 ```
 
-### Important Directories
+Framework internals are not copied into the application; they are provided by `sayedsahin/bhitti-framework` through Composer.
 
-| Directory | Purpose |
-|---|---|
-| `app/Controllers` | Web and API controllers |
-| `app/Helpers` | Globally available helper functions |
-| `app/Middlewares` | Application middleware |
-| `app/Models` | Lightweight Query Builder models |
-| `app/Supports` | Authentication, roles and rate limiting |
-| `app/Systems` | Framework core systems |
-| `app/Validation` | Validator and validation exceptions |
-| `app/Views` | Plain PHP view templates |
-| `bootstrap` | Application bootstrap scripts |
-| `config` | Framework and application configuration |
-| `database` | Database schema and backup files |
-| `docs` | Complete framework documentation |
-| `public` | Public web-server document root |
-| `storage` | Generated cache and runtime files |
+## Production
 
-## Security
-
-Bhitti includes:
-
-- PDO-bound query values
-- CSRF protection
-- secure native session settings
-- HttpOnly cookies
-- SameSite cookies
-- hashed authentication tokens
-- trusted proxy validation
-- web and API security headers
-- request rate limiting
-- safe same-domain back redirects
-- generic production error responses
-- UPDATE and DELETE WHERE protection
-
-Application developers must still ensure that:
-
-- dynamic output is escaped with `e()`
-- raw SQL remains developer-controlled
-- SQL identifiers are selected through allowlists
-- production uses HTTPS
-- debug mode is disabled in production
-- Redis and Memcached are not publicly exposed
-- database constraints enforce uniqueness and relationships
-- secrets are never committed to source control
-
-## Production Deployment
-
-Recommended production steps:
-
-```bash
-composer install --no-dev --optimize-autoloader
-php run cache:config
-php run cache:route
-```
-
-Production environment:
-
-```dotenv
-DEBUG_MODE=false
-SESSION_SECURE=true
-```
-
-The web-server document root must point to:
+Use the deployment environment chosen for the application and point the web document root to:
 
 ```text
 public/
 ```
 
-Required storage directories must be writable by the PHP worker.
+Typical production preparation:
 
-Generated configuration and route caches should be created on the target server, not included in the public release archive.
-
-Do not distribute:
-
-```text
-.env
-storage/cache/config.cache.php
-storage/cache/route.cache.php
-runtime cache files
+```bash
+composer install --no-dev --optimize-autoloader
+php run config:cache
+php run route:cache
 ```
+
+Production environment should normally include:
+
+```dotenv
+APP_DEBUG=false
+SESSION_SECURE=true
+```
+
+When debug mode is disabled, production migration and rollback commands require explicit `--force`:
+
+```bash
+php run migrate --force
+php run migrate:rollback --force
+```
+
+Keep `.env`, credentials, and runtime cache files out of source control. Redis and Memcached endpoints should remain private application infrastructure.
 
 ## Documentation
 
-Complete documentation is available in:
+Full developer documentation:
 
-[Read the Bhitti Documentation](docs/README.md)
+- **Documentation:** https://github.com/sayedsahin/bhitti-doc
+- **Starter application:** https://github.com/sayedsahin/bhitti
+- **Framework core:** https://github.com/sayedsahin/bhitti-framework
 
-The documentation includes dedicated guides for:
-
-- installation
-- request lifecycle
-- configuration
-- routing
-- controllers
-- requests and responses
-- views and helpers
-- middleware
-- validation
-- Query Builder and models
-- sessions and authentication
-- cache and rate limiting
-- exception handling
-- security
-- deployment
-- performance
-- troubleshooting
-
-## Intended Use
-
-Bhitti is suitable for:
-
-- web applications
-- REST APIs
-- business applications
-- authentication-based portals
-- CRUD systems
-- admin panels
-- internal tools
-- small and medium SaaS applications
-
-It is especially useful when a simple router is not enough, but a large full-stack framework introduces more complexity than the application requires.
+The documentation covers installation, request lifecycle, configuration, routing, controller middleware attributes, views, Query Builder, models, migrations, seeders, sessions, cache, rate limiting, security, deployment, performance, and upgrading from `v0.1.0`.
 
 ## Project Principle
 
-> Provide the features most applications need while keeping the framework fast, simple and understandable.
-````
+> Provide the features most applications need while keeping the framework fast, simple, explicit, and understandable.
