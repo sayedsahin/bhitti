@@ -557,7 +557,7 @@ Keep `.env`, credentials, and runtime cache files out of source control. Redis a
 
 Full developer documentation:
 
-- **Documentation:** https://github.com/sayedsahin/bhitti-doc
+- **Documentation:** https://sayedsahin.github.io/bhitti-doc
 - **Starter application:** https://github.com/sayedsahin/bhitti
 - **Framework core:** https://github.com/sayedsahin/bhitti-framework
 
