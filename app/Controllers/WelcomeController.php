@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use Bhitti\Http\Response;
+
 class WelcomeController extends Controller
 {
-	public function index()
+	public function index(): string
 	{
 		$users = [
 			[
@@ -27,7 +29,7 @@ class WelcomeController extends Controller
 		]);
 	}
 
-	public function apiIndex()
+	public function apiIndex(): Response
 	{
 		$users = [
 			[
