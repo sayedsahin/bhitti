@@ -3,15 +3,6 @@
     "description": "A lightweight, high-performance PHP framework.",
     "type": "project",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../bhitti-framework",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "App\\": "app/"
@@ -22,6 +13,6 @@
     },
     "require": {
         "php": ">=8.3",
-        "sayedsahin/bhitti-framework": "dev-main"
+        "sayedsahin/bhitti-framework": "^0.2"
     }
 }
