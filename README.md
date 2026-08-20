@@ -490,7 +490,7 @@ $users = DB::query()
     ->table('users')
     ->select('id', 'name', 'email')
     ->where('status', 'active')
-    ->order('created_at', 'DESC')
+    ->order('created_at DESC')
     ->limit(20)
     ->get();
 ```

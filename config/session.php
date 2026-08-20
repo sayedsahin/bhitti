@@ -27,7 +27,7 @@ return [
     ],
 
     'lock' => (bool) env('SESSION_LOCK', true),
-    'lock_ttl' => (int) env('SESSION_LOCK_TTL', 10),
+    'lock_ttl' => (int) env('SESSION_LOCK_TTL', 30),
     'lock_wait' => (float) env('SESSION_LOCK_WAIT', 2.0),
     'lock_sleep' => (int) env('SESSION_LOCK_SLEEP', 20000),
 ];
