@@ -34,11 +34,10 @@ Bhitti Framework includes:
 - PHP Attribute-based controller class and method middleware
 - Lightweight dependency injection container
 - Request, response, JSON, and redirect handling
-- Plain PHP views with layouts and sections
+- Native PHP template system
 - Validation
 - PDO-based database layer
-- Query Builder with identifier validation and bound values
-- Lightweight model queries
+- Simple, clean and lightweight Query Builder
 - Multiple database connections
 - Database transactions
 - Database migrations
