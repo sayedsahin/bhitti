@@ -191,7 +191,7 @@ resources/views/welcome.view.php
 Example:
 
 ```php
-<h1><?= e($title) ?></h1>
+<h1><?= $this->e($title) ?></h1>
 ```
 
 Request flow:
