@@ -173,9 +173,4 @@ class AuthController extends Controller
 		Auth::logout();
 		return response()->redirect('/login');
 	}
-
-	public function forgot()
-	{
-		return view('forgot_password');
-	}
 }
