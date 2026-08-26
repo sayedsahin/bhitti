@@ -424,13 +424,7 @@ resources/views/users/index.view.php
 Escape dynamic output:
 
 ```php
-<?= e($title) ?>
-```
-
-Use `raw()` only for trusted HTML:
-
-```php
-<?= raw($trustedHtml) ?>
+<?= $this->e($title) ?>
 ```
 
 ### Database
