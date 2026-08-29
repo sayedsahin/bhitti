@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07ad0c96cc85592e4df0415ece1d977a",
+    "content-hash": "88416480305a2a3d85206b991f6bd216",
     "packages": [
         {
             "name": "nikic/fast-route",
@@ -62,7 +62,7 @@
             "dist": {
                 "type": "path",
                 "url": "../bhitti-framework",
-                "reference": "b350e4970ef3105515923fffc5a3ad4a15913bdc"
+                "reference": "08a7b0339bbb141408c510efa2361616232164da"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -71,7 +71,10 @@
                 "php": ">=8.3",
                 "symfony/dotenv": "^7.4"
             },
-            "type": "project",
+            "suggest": {
+                "twig/twig": "Required only when using the optional twig() view helper."
+            },
+            "type": "library",
             "autoload": {
                 "psr-4": {
                     "Bhitti\\": "src/Bhitti/"
@@ -177,9 +180,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3",
-        "ext-mbstring": "*",
-        "ext-pdo": "*"
+        "php": ">=8.3"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
