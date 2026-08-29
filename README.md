@@ -35,6 +35,7 @@ Bhitti Framework includes:
 - Lightweight dependency injection container
 - Request, response, JSON, and redirect handling
 - Native PHP template system
+- Optional Twig template support
 - Validation
 - PDO-based database layer
 - Simple, clean and lightweight Query Builder
