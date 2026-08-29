@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Supports\Auth;
 use App\Supports\Role;
+use Bhitti\Http\Response;
 use Bhitti\Session\Cookie;
 use Bhitti\Session\RememberToken;
 use Bhitti\Validation\ValidationException;
@@ -18,12 +19,12 @@ class AuthController extends Controller
 	{
 	}
 
-	public function login()
+	public function login(): Response
 	{
-		return view('auth.login', ['title' => 'Login']);
+		return response()->view('auth.login', ['title' => 'Login']);
 	}
 
-	public function loginProcess()
+	public function loginProcess(): Response
 	{
 
 		/*
@@ -88,13 +89,13 @@ class AuthController extends Controller
 		return response()->redirect('/')->with(['success' => 'Login Successful']);
 	}
 
-	public function registration()
+	public function registration(): Response
 	{
-		return view('auth.register', ['title' => 'Register']);
+		return response()->view('auth.register', ['title' => 'Register']);
 	}
 
 
-	public function registrationProcess()
+	public function registrationProcess(): Response
 	{
 
 		/*
@@ -162,7 +163,7 @@ class AuthController extends Controller
 		return response()->redirect('/login')->with(['success' => 'Registration Successful']);
 	}
 
-	public function logout()
+	public function logout(): Response
 	{
 		$userId = Auth::id();
 

@@ -8,7 +8,7 @@ use Bhitti\Http\Response;
 
 class WelcomeController extends Controller
 {
-	public function index(): string
+	public function index(): Response
 	{
 		$users = [
 			[
@@ -23,7 +23,7 @@ class WelcomeController extends Controller
 			]
 		];
 
-		return view('welcome', [
+		return response()->view('welcome', [
 			'title' => 'Welcome to Bhitti',
 			'users' => $users
 		]);

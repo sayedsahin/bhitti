@@ -6,13 +6,14 @@ namespace App\Controllers;
 
 use App\Supports\Auth;
 use App\Supports\Role;
+use Bhitti\Http\Response;
 use Bhitti\Validation\ValidationException;
 use Bhitti\Validation\Validator;
 
 class ApiAuthController extends Controller
 {
 
-    public function login()
+    public function login(): Response
     {
         $request = request();
 
@@ -57,7 +58,7 @@ class ApiAuthController extends Controller
         ], 200);
     }
 
-    public function register()
+    public function register(): Response
     {
         $request = request();
 
@@ -119,7 +120,7 @@ class ApiAuthController extends Controller
         ], 201);
     }
 
-    public function forgot()
+    public function forgot(): Response
     {
         $request = request();
 
@@ -155,7 +156,7 @@ class ApiAuthController extends Controller
         ], 200);
     }
 
-    public function verify($token)
+    public function verify(string $token): Response
     {
         $tokenHash = hash('sha256', $token);
         $user = db()->table('users')->where('verification_token', $tokenHash)->first();
@@ -172,7 +173,7 @@ class ApiAuthController extends Controller
         return response()->json(['message' => 'Email verified successfully'], 200);
     }
 
-    public function logout()
+    public function logout(): Response
     {
         $token = request()->bearerToken();
 
@@ -194,7 +195,7 @@ class ApiAuthController extends Controller
     }
 
     // Optional: Get current user profile
-    public function profile()
+    public function profile(): Response
     {
         $user = Auth::user();
         if (!$user) {

@@ -174,7 +174,7 @@ final class WelcomeController extends Controller
 {
     public function index(): string
     {
-        return view('welcome', [
+        return response()->view('welcome', [
             'title' => 'Bhitti',
         ]);
     }
@@ -409,7 +409,7 @@ final class ReportController extends Controller
 Render a view:
 
 ```php
-return view('users.index', [
+return response()->view('users.index', [
     'title' => 'Users',
     'users' => $users,
 ]);
