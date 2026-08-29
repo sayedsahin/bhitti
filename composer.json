@@ -13,6 +13,6 @@
     },
     "require": {
         "php": ">=8.3",
-        "sayedsahin/bhitti-framework": "^0.2"
+        "sayedsahin/bhitti-framework": "^0.3"
     }
 }
